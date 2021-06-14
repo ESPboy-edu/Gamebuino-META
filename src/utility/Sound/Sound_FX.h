@@ -67,7 +67,7 @@ private:
 	static const uint8_t VOLUME_SWEEP_SCALE = 8;
 	static const uint8_t PERIOD_START_SCALE = FPP;
 	static const uint8_t PERIOD_SWEEP_SCALE = 7;
-	static const int32_t LENGTH_SCALE = 441 * 2;
+	static const int32_t LENGTH_SCALE = 441 * 2 / SR_DIVIDER;
 public:
 
 
@@ -79,9 +79,8 @@ public:
 
 	void init();
 	void update();
-	void generateNoise(uint32_t* endP) __attribute__((optimize("-O3"))); // Handle noise instrument
-	void generateSquare(uint32_t* endP) __attribute__((optimize("-O3")));
-	void generateSilence(uint32_t* endP) __attribute__((optimize("-O3")));
+	void generateNoise() __attribute__((optimize("-O3"))); // Handle noise instrument
+	void generateSquare() __attribute__((optimize("-O3")));
 
 	void play(const Gamebuino_Meta::Sound_FX & Sound_FX);
 	void play(const Gamebuino_Meta::Sound_FX * const pattern, uint8_t length);
@@ -99,8 +98,8 @@ public:
 	int32_t _current_Sound_FX_period_sweep;
 	uint32_t _current_Sound_FX_length;
 
-	uint32_t* _headP;
-	uint32_t* _firstZeroP;
+
+	uint16_t _head_index;
 	int16_t _pitch_scale;
 
 	int32_t _noise_period;

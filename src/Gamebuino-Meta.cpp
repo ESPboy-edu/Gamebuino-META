@@ -24,14 +24,15 @@ Authors:
 #include "Gamebuino-Meta.h"
 #include "utility/Graphics-SD.h"
 #include "utility/Misc.h"
+#include "utility/ESPboyLogo.h"
+
+
 
 #ifndef min
 #define min(x, y) ((x < y) ? x : y)
 #endif
 
-#if USE_SDFAT
-SdFat SD;
-#endif
+extern SPIClass sdSPI;
 
 // a 3x5 font table
 extern const uint8_t font3x5[];
@@ -52,11 +53,11 @@ const SaveDefault settingsDefaults [] = {
 // 0 is min, 255 is max
 // m*x^2 fit through (0,0) (4,255) (5-steps)
 // m=15.9375
-const uint8_t neoPixelsIntensities[] = {
+const uint8_t PROGMEM neoPixelsIntensities[] = {
 	0, 16, 64, 143, 255
 };
 
-const uint16_t startLightsData[] = {
+const uint16_t PROGMEM startLightsData[] = {
 	2, 4,
 	24,
 	1,
@@ -66,7 +67,7 @@ const uint16_t startLightsData[] = {
 	0xc000,0x4000,0x4000,0x1000,0x1000,0x0,0x0,0x0,0x3800,0xa001,0x1000,0x3800,0x0,0x1000,0x0,0x0,0x1000,0x3001,0x0,0x9006,0x0,0x3003,0x0,0x1001,0x0,0x1001,0x0,0x3806,0x0,0xa815,0x1002,0x4008,0x0,0x1003,0x0,0x1003,0x1804,0x5810,0x5814,0xa03f,0x0,0x0,0x1809,0x0,0x501f,0x180d,0x70ff,0x403f,0x1818,0x0,0x305f,0x0,0x69ff,0x0,0x289f,0x101f,0x28bf,0x83f,0x7b5f,0x0,0x20ff,0x0,0x85f,0x0,0x94bf,0x295f,0x299f,0x87f,0x7f,0x0,0x0,0x0,0x221f,0xadff,0xdf,0x1a5f,0x0,0xfe,0x0,0x0,0x153,0xb7f,0x0,0xcf5f,0x0,0x49f,0x0,0x18b,0x0,0x1a9,0x0,0x63d,0x0,0xdfff,0x1c7,0x659,0x0,0x1c6,0x0,0x1c5,0x1c5,0x632,0x62f,0xa7fd,0x0,0x0,0x1a3,0x0,0x5e8,0x1a2,0x6ff7,0x5c6,0x1a1,0x0,0x5c3,0x0,0x4fef,0x0,0x5a1,0x180,0x580,0x180,0x2fe8,0x0,0x540,0x0,0x160,0x0,0x1fe3,0x4e0,0x4a0,0x140,0x120,0x0,0x0,0x0,0x2e0,0xfa0,0xa0,0x260,0x0,0xa0,0x0,0x0,0x60,0x960,0x0,0x1b60,0x0,0x900,0x0,0x40,0x0,0x40,0x0,0x8a0,0x0,0x2160,0x20,0x880,0x0,0x20,0x0,0x20,0x20,0x840,0x840,0x18c0,0x0,0x0,0x20,0x0,0x840,0x20,0x2060,0x1020,0x0,0x0,0x1020,0x0,0x3840,0x0,0x1820,0x800,0x2000,0x800,0x6820,0x0,0x2800,0x0,0x1000,0x0
 };
 
-const uint16_t buttonsIconsData[] = {
+const uint16_t PROGMEM buttonsIconsData[] = {
 	10, 9,
 	8,
 	0,
@@ -76,7 +77,7 @@ const uint16_t buttonsIconsData[] = {
 	0x7705,0x7777,0x5750,0x3377,0x7577,0x7357,0x3777,0x5775,0x3373,0x7537,0x7357,0x3777,0x5775,0x7773,0x7537,0x7753,0x7777,0x5535,0x3333,0x5533,0x5505,0x5555,0x0550,0x5555,0x5055,0x7755,0x7777,0x5755,0x3377,0x7577,0x7357,0x3777,0x5775,0x3373,0x7537,0x7357,0x3777,0x5775,0x7773,0x7537,0x7755,0x7777,0x0555,0x5555,0x5055,0x7705,0x7777,0x5750,0x8878,0x7577,0x7857,0x8777,0x5775,0x8878,0x7577,0x7857,0x8777,0x5775,0x8878,0x7577,0x7758,0x7777,0x5585,0x8888,0x5588,0x5505,0x5555,0x0550,0x5555,0x5055,0x7755,0x7777,0x5755,0x8878,0x7577,0x7857,0x8777,0x5775,0x8878,0x7577,0x7857,0x8777,0x5775,0x8878,0x7577,0x7755,0x7777,0x0555,0x5555,0x5055,0x7705,0x7777,0x5750,0x4474,0x7547,0x7757,0x7777,0x5775,0x4474,0x7547,0x7757,0x7777,0x5775,0x4474,0x7547,0x7754,0x7777,0x5545,0x4444,0x5544,0x5505,0x5555,0x0550,0x5555,0x5055,0x7755,0x7777,0x5755,0x4474,0x7547,0x7757,0x7777,0x5775,0x4474,0x7547,0x7757,0x7777,0x5775,0x4474,0x7547,0x7755,0x7777,0x0555,0x5555,0x5055,0x7705,0x7777,0x5750,0x4477,0x7577,0x7457,0x4744,0x5775,0x4444,0x7544,0x7457,0x4747,0x5775,0x4774,0x7547,0x7754,0x7777,0x5545,0x4444,0x5544,0x5505,0x5555,0x0550,0x5555,0x5055,0x7755,0x7777,0x5755,0x4477,0x7577,0x7457,0x4744,0x5775,0x4444,0x7544,0x7457,0x4747,0x5775,0x4774,0x7547,0x7755,0x7777,0x0555,0x5555,0x5055
 };
 
-const uint16_t arrowsIconsData[] = {
+const uint16_t PROGMEM arrowsIconsData[] = {
 	7,7,    // width, height
 	8,      // number of frames
 	0,      // frame looping speed
@@ -86,7 +87,7 @@ const uint16_t arrowsIconsData[] = {
 	0xca30,0x5268,0xffff,0xffff,0xffff,0x5268,0xca30,0x5268,0xffff,0xffff,0xffff,0xffff,0xffff,0x5268,0x5268,0xffff,0x4439,0xffff,0x4439,0xffff,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0x4439,0xffff,0xffff,0xffff,0x4439,0x5268,0x5268,0x5268,0x4439,0x4439,0x4439,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0xffff,0xffff,0xffff,0x5268,0x5268,0xffff,0x4439,0xffff,0x4439,0xffff,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0xca30,0x5268,0xffff,0xffff,0xffff,0x5268,0xca30,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0xffff,0x4439,0xffff,0xffff,0xffff,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0x4439,0xffff,0xffff,0xffff,0x4439,0x5268,0x5268,0x5268,0x4439,0x4439,0x4439,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0xffff,0x4439,0xffff,0xffff,0xffff,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0xca30,0x5268,0xffff,0xffff,0xffff,0x5268,0xca30,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0xffff,0xffff,0xffff,0x4439,0xffff,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0x4439,0xffff,0xffff,0xffff,0x4439,0x5268,0x5268,0x5268,0x4439,0x4439,0x4439,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0xffff,0xffff,0xffff,0x4439,0xffff,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0xca30,0x5268,0xffff,0xffff,0xffff,0x5268,0xca30,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0xffff,0x4439,0xffff,0x4439,0xffff,0x5268,0x5268,0xffff,0xffff,0xffff,0xffff,0xffff,0x5268,0x5268,0x4439,0xffff,0xffff,0xffff,0x4439,0x5268,0x5268,0x5268,0x4439,0x4439,0x4439,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0x4439,0xffff,0xffff,0x5268,0x5268,0xffff,0x4439,0xffff,0x4439,0xffff,0x5268,0x5268,0xffff,0xffff,0xffff,0xffff,0xffff,0x5268,0x5268,0x5268,0xffff,0xffff,0xffff,0x5268,0x5268,0xca30,0x5268,0x5268,0x5268,0x5268,0x5268,0xca30
 };
 
-const uint8_t gamebuinoLogo[] = {80,10,
+const uint8_t PROGMEM gamebuinoLogo[] = {80,10,
 	0b00111100,0b00111111,0b00111111,0b11110011,0b11110011,0b11110011,0b00110011,0b00111111,0b00111111,0b00011100,
 	0b00111100,0b00111111,0b00111111,0b11110011,0b11110011,0b11110011,0b00110011,0b00111111,0b00111111,0b00100110,
 	0b00110000,0b00110011,0b00110011,0b00110011,0b00000011,0b00110011,0b00110011,0b00110011,0b00110011,0b00100110,
@@ -99,7 +100,7 @@ const uint8_t gamebuinoLogo[] = {80,10,
 	0b00111111,0b00110011,0b00110011,0b00110011,0b11110011,0b11110011,0b11110011,0b00110011,0b00111111,0b00000000,
 };
 
-const uint8_t homeIcons[] = {80,12,
+const uint8_t PROGMEM homeIcons[] = {80,12,
 	0b00000000,0b10000000,0b00000000,0b00000000,0b00000111,0b11111100,0b00000000,0b00000000,0b00011101,0b11000000,
 	0b00001000,0b10000000,0b00000001,0b00000000,0b00000100,0b00001100,0b00001110,0b00000000,0b00111111,0b11100000,
 	0b00000100,0b00001000,0b00000011,0b00010000,0b00000000,0b00111100,0b00011111,0b11111000,0b00110111,0b01100000,
@@ -114,7 +115,7 @@ const uint8_t homeIcons[] = {80,12,
 	0b00000001,0b00000000,0b00000000,0b00000000,0b00000000,0b11000000,0b00000000,0b00000000,0b00000000,0b00000000,
 };
 
-const uint8_t homeIconsNoExit[] = {64,12,
+const uint8_t PROGMEM homeIconsNoExit[] = {64,12,
 	0b00000000,0b10000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00011101,0b11000000,
 	0b00001000,0b10000000,0b00000001,0b00000000,0b00001110,0b00000000,0b00111111,0b11100000,
 	0b00000100,0b00001000,0b00000011,0b00010000,0b00011111,0b11111000,0b00110111,0b01100000,
@@ -129,7 +130,7 @@ const uint8_t homeIconsNoExit[] = {64,12,
 	0b00000001,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,0b00000000,
 };
 
-const uint8_t volumeUnmuted[] = {8,12,
+const uint8_t PROGMEM volumeUnmuted[] = {8,12,
 	0b00000000,
 	0b00000000,
 	0b00010000,
@@ -144,13 +145,29 @@ const uint8_t volumeUnmuted[] = {8,12,
 	0b00000000,
 };
 
-const uint16_t startSound[] = {0x0005,0x338,0x3FC,0x254,0x1FC,0x25C,0x3FC,0x368,0x0000};
+const uint16_t PROGMEM startSound[] = {0x0005,0x338,0x3FC,0x254,0x1FC,0x25C,0x3FC,0x368,0x0000};
 
 Gamebuino* gbptr = nullptr;
 
-void Gamebuino::begin() {
+
+Gamebuino::Gamebuino(){
+  Serial.begin(115200);
+  
+  WiFi.mode(WIFI_OFF); 
+  
+//DAC init and backlit off
+  dac.begin(MCP4725address);
+  dac.setVoltage(0, false);
+
+//mcp23017 init for buttons, LED LOCK and TFT Chip Select pins
+  mcp.begin(MCP23017address);
+  mcp.pinMode(CSTFTPIN, OUTPUT);
+  mcp.digitalWrite(CSTFTPIN, LOW);
+  myLED.begin(&mcp);
+  
+  
 	// first we disable the watchdog timer so that we tell the bootloader everything is fine!
-	WDT->CTRL.bit.ENABLE = 0;
+	// WDT->CTRL.bit.ENABLE = 0;
 	gbptr = this;
 	
 	// let's to some sanity checks which are done on compile-time
@@ -171,24 +188,56 @@ void Gamebuino::begin() {
 	startMenuTimer = 255;
 
 	//neoPixels
-	neoPixels.begin();
-	neoPixels.clear();
+	//neoPixels.begin();
+	//neoPixels.clear();
+	//neoPixels.show();
 
 	//buttons
-	buttons.begin();
+	buttons.begin(&mcp);
 	buttons.update();
-	bool muteSound = buttons.repeat(Button::b, 0);
 	
 	//tft
 	tft.init();
-	tft.setRotation(Rotation::down);
+	tft.setRotation(Rotation::left);
+	Graphics_SD::setTft(&tft);
+};
+
+
+void drawXBitmap(Graphics& g, int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h){
+  int32_t i, j, byteWidth = (w + 7) / 8;
+  g.setColor(YELLOW);
+  for (j = 0; j < h; j++) {
+    for (i = 0; i < w; i++ ) {
+      if (pgm_read_byte(bitmap + j * byteWidth + i / 8) & (1 << (i & 7))) {
+        g.drawPixel(x + i, y + j);
+      }
+    }
+  }
+}
+
+
+void Gamebuino::begin() {
+  myLED.setRGB(0,0,0);
+
+  drawXBitmap(tft, 30,24, g_espboy, 68, 64);
+
+  //sound init and test  
+  pinMode(SOUNDPIN, OUTPUT);
+  tone(SOUNDPIN, 200, 100); 
+  delay(100);
+  tone(SOUNDPIN, 100, 100);
+  delay(100);
+  noTone(SOUNDPIN);
+  
+  dac.setVoltage(4095, true);
+  delay(2000);
+  
+  display.fill(Color::black);
+  display.fontSize = SYSTEM_DEFAULT_FONT_SIZE;
+  	
+  display.setColor(Color::white);
+  drawLogo(display, 2, 2, display.fontSize);
 	
-	
-	display.fill(Color::black);
-	display.fontSize = SYSTEM_DEFAULT_FONT_SIZE;
-	
-	display.setColor(Color::white);
-	drawLogo(display, 2, 2, display.fontSize);
 #if USE_SDFAT
 	display.setColor(Color::brown, Color::black);
 	display.setCursor(0, display.height() - (display.getFontHeight()*display.fontSize));
@@ -197,22 +246,26 @@ void Gamebuino::begin() {
 	updateDisplay();
 
 #if USE_SDFAT
-	sdInited = SD.begin(SD_CS, SPISettings(12000000, MSBFIRST, SPI_MODE0));
-	if (!sdInited) {
+    LittleFSConfig cfg;
+    cfg.setAutoFormat(false);
+    LittleFS.setConfig(cfg);
+
+	if (!LittleFS.begin()) {
 		display.setColor(Color::red, Color::black);
-		display.println("FAILED!");
+		display.println("FORMAT...");
 		updateDisplay();
-		delay(100);
-	} else {
-		display.setColor(Color::lightgreen, Color::black);
-		display.println("OK!");
-		updateDisplay();
-	}
-#else // USE_SDFAT
-	PORT->Group[0].DIRSET.reg = (1UL<<27);
-	PORT->Group[0].OUT.reg |= (1UL<<27);
+		LittleFS.format();}
+	
+	display.setColor(Color::lightgreen, Color::black);
+	display.println("OK!");
+	updateDisplay();
+	
+	delay(1000);
+	
 #endif // USE_SDFAT
+	
 	buttons.update();
+	bool muteSound = buttons.repeat(Button::b, 0);
 	muteSound = muteSound || buttons.repeat(Button::b, 0);
 
 	display.setColor(Color::white, Color::black);
@@ -220,50 +273,50 @@ void Gamebuino::begin() {
 	
 	// SD is initialized, let's switch to the folder!
 #if USE_SDFAT
-	if (!SD.exists(folder_name)) {
-		SD.mkdir(folder_name);
+	if (!LittleFS.exists(folder_name)) {
+		LittleFS.mkdir(folder_name);
 	}
-	SD.chdir(folder_name);
 #endif
 	
-	save = Save(SAVEFILE_NAME, folder_name);
+	// save = Save(SAVEFILE_NAME, folder_name);
 	
-	settings = Save("/SETTINGS.SAV", "GBMS");
-	settings.config(SETTINGSCONF_NUM_BLOCKS, settingsDefaults);
+	// settings = Save("/SETTINGS.SAV", "GBMS");
+	// settings.config(SETTINGSCONF_NUM_BLOCKS, settingsDefaults);
 	
 	//sound
 	sound.begin();
-	if (settings.get(SETTING_VOLUME_MUTE)) {
-		sound.mute();
-	}
-	sound.setVolume(settings.get(SETTING_VOLUME));
+	// if (settings.get(SETTING_VOLUME_MUTE)) {
+	// 	sound.mute();
+	// }
+	// sound.setVolume(settings.get(SETTING_VOLUME));
 
 	if (muteSound) {
-		settings.set(SETTING_VOLUME_MUTE, (int32_t)1);
+		// settings.set(SETTING_VOLUME_MUTE, (int32_t)1);
 		sound.mute();
 	}
-	
+
 	// language
 	language.setCurrentLang((LangCode)settings.get(SETTING_LANGUAGE));
 	
-	// neoPixels
-	neoPixels.setBrightness(neoPixelsIntensities[settings.get(SETTING_NEOPIXELS_INTENSITY)]);
 	
-	Graphics_SD::setTft(&tft);
+    // neoPixels
+	//neoPixels.setBrightness(neoPixelsIntensities[settings.get(SETTING_NEOPIXELS_INTENSITY)]);
+
 	// only do titleScreen after a hard power on
-	if (PM->RCAUSE.bit.POR) {
-#if AUTOSHOW_STARTSCREEN
+	if (true) {
+//#if AUTOSHOW_STARTSCREEN
 		startScreen();
-#endif
-#if AUTOSHOW_TITLESCREEN
-		titleScreen();
-#endif
+//#endif
+//#if AUTOSHOW_TITLESCREEN
+		//titleScreen();
+//#endif
 	}
 	pickRandomSeed();
 	display.clear();
 	
 	inited = true;
 }
+
 
 void Gamebuino::drawLogo(Graphics& g, int8_t x, int8_t y, uint8_t scale) {
 	Image logo(78, 10, ColorMode::index);
@@ -272,12 +325,14 @@ void Gamebuino::drawLogo(Graphics& g, int8_t x, int8_t y, uint8_t scale) {
 	g.drawImage(x*scale, y*scale, logo, 78*scale, 10*scale);
 }
 
+
+
 void Gamebuino::startScreen(){
 	Image startLights(startLightsData);
 	int8_t i = 24;
 	update();
 	sound.play(startSound);
-	while(i){
+	while (i) {
 		while(!update());
 		i--;
 		display.clear();
@@ -297,14 +352,14 @@ void Gamebuino::titleScreen() {
 	static char filename[17] = "TITLESCREEN.BMP";
 	
 #if USE_SDFAT
-	bool titleScreenImageExists = SD.exists(filename);
+	bool titleScreenImageExists = LittleFS.exists(filename);
 #else
 	bool titleScreenImageExists = false;
 #endif
 	if (titleScreenImageExists) {
 		display.init(ts_backup_width, ts_backup_height, filename);
 	}
-	
+
 	Image buttonsIcons = Image(buttonsIconsData);
 	
 	while(1) {
@@ -355,6 +410,8 @@ void Gamebuino::titleScreen() {
 bool recording_screen = false;
 
 bool Gamebuino::update() {
+
+    delay(0);
 	if (((nextFrameMillis - millis()) > timePerFrame) && frameEndFlag) { //if time to render a new frame is reached and the frame end has ran once
 		nextFrameMillis = millis() + timePerFrame;
 		frameCount++;
@@ -391,27 +448,21 @@ bool Gamebuino::update() {
 	updateDisplay();
 	
 	//neoPixels update
+	
 	uint8_t px_height = lights.height();
 	uint8_t px_width = lights.width();
-	static const uint8_t px_map[] = {
-		7, 0,
-		6, 1,
-		5, 2,
-		4, 3,
-	};
+	static const uint8_t px_map[] = {0, 1, 2, 3, 4, 5, 6, 7};
 	for (uint8_t y = 0; y < px_height; y++) {
 		for (uint8_t x = 0; x < px_width; x++) {
 			RGB888 c = rgb565Torgb888(lights.getPixel(x, y));
-			// intensity is scaled directly via neoPixels.setBrightness
-			neoPixels.setPixelColor(px_map[y*px_width + x], c.r, c.g, c.b);
 		}
 	}
 	//show a red blinking pixel on recording screen
 	if (recording_screen) {
-		neoPixels.setPixelColor(px_map[0], (frameCount % 10) < 5 ? 0xFF : 0, 0, 0);
+		//neoPixels.setPixelColor(px_map[0], (frameCount % 10) < 5 ? 0xFF : 0, 0, 0);
 	}
-	neoPixels.show();
-	neoPixels.clear();
+	//neoPixels.show();
+	//neoPixels.clear();
 
 	frameDurationMicros = micros() - frameStartMicros;
 	Graphics_SD::update(); // update screen recordings
@@ -420,12 +471,13 @@ bool Gamebuino::update() {
 	return false;
 }
 
+
 void Gamebuino::waitForUpdate() {
 	while(!update());
 }
 
 void Gamebuino::updateDisplay() {
-	tft.drawImage(0, 0, (Image&)display, tft.width(), tft.height()); //send the buffer to the screen
+	tft.drawImage(0, 0, (Image&)display, 128, 128); //send the buffer to the screen
 }
 
 void Gamebuino::setFrameRate(uint8_t fps) {
@@ -444,11 +496,8 @@ uint8_t Gamebuino::getCpuLoad(){
 	return(frameDurationMicros/(10*timePerFrame));
 }
 
-extern "C" char* sbrk(int incr);	
-uint16_t Gamebuino::getFreeRam() {	
-	// from https://github.com/mpflaga/Arduino-MemoryFree/blob/master/MemoryFree.cpp
-	char top;
-	return &top - reinterpret_cast<char*>(sbrk(0));
+uint16_t Gamebuino::getFreeRam() {
+	return ESP.getFreeHeap();
 }
 
 #define HOME_MENU_SAVE_STATE \
@@ -491,8 +540,8 @@ void Gamebuino::checkHomeMenu() {
 			bool isMute = sound.isMute();
 			sound.mute();
 			display.setFont(font3x5);
-			neoPixels.clear();
-			neoPixels.show();
+			//neoPixels.clear();
+			//neoPixels.show();
 			display.stopRecording(true);
 			recording_screen = false;
 			//refresh screen to erase log messages
@@ -501,6 +550,7 @@ void Gamebuino::checkHomeMenu() {
 				sound.unmute();
 			}
 			sound.stopEfxOnly();
+		
 			HOME_MENU_RESTORE_STATE;
 		}
 		homeMenu();
@@ -514,22 +564,22 @@ void Hook_ExitHomeMenu() {
 
 bool homeMenuGetUniquePath(char* name, uint8_t offset, uint8_t len) {
 #if USE_SDFAT
-	if(!SD.exists("REC")) {
-		SD.mkdir("REC");
+	if(!LittleFS.exists("REC")) {
+		LittleFS.mkdir("REC");
 	}
 	int32_t start;
-	File cache;
-	if (!SD.exists("REC/REC.CACHE")) {
-		cache = SD.open("REC/REC.CACHE", FILE_WRITE);
-		cache.rewind();
+	fs::File cache;
+	if (!LittleFS.exists("REC/REC.CACHE")) {
+		cache = LittleFS.open("REC/REC.CACHE", "w");
+		cache.seek(0);
 		f_write32(0, &cache); // images
 		cache.close();
 	}
-	cache = SD.open("REC/REC.CACHE", FILE_WRITE);
-	cache.rewind();
+	cache = LittleFS.open("REC/REC.CACHE", "w");
+	cache.seek(0);
 	start = f_read32(&cache);
 	start = sdPathNoDuplicate(name, offset, len, start + 1);
-	cache.rewind();
+	cache.seek(0);
 	if (start == -1) {
 		f_write32(0, &cache);
 		start = sdPathNoDuplicate(name, offset, len);
@@ -553,6 +603,8 @@ void fileEndingGmvToBmp(char (&name)[N]) {
 	name[N-2] = 'P';
 }
 
+
+
 void Gamebuino::homeMenu(){
 	//here we don't use gb.update and display.not to interfere with the game
 	//the only things we use are gb.tft and gb.buttons
@@ -574,13 +626,13 @@ void Gamebuino::homeMenu(){
 	bool changed = true;
 	int frameCounter = 0;
 	
-	neoPixels.clear();
-	neoPixels.show();
+	//neoPixels.clear();
+	//neoPixels.show();
 	// determine the neoPixel color index
 	uint8_t neoPixelsIntensity = 0;
-	for (;(neoPixelsIntensity < 5) && (neoPixels.getBrightness() > neoPixelsIntensities[neoPixelsIntensity]);neoPixelsIntensity++) {
+	//for (;(neoPixelsIntensity < 5) && (neoPixels.getBrightness() > neoPixelsIntensities[neoPixelsIntensity]);neoPixelsIntensity++) {
 		// do nothing
-	}
+	//}
 	
 	//static screen content
 	//draw icons first as it's where the user is focused
@@ -618,6 +670,7 @@ void Gamebuino::homeMenu(){
 	}
 	
 	while(1) {
+	    delay(0);
 		//Ensure constant framerate using millis (40ms = 25FPS)
 		while(!((millis() - lastMillis) > 40));
 		
@@ -625,9 +678,6 @@ void Gamebuino::homeMenu(){
 		lastMillis = millis();
 		buttons.update();
 		frameCounter++;
-		
-		//clear noPixels
-		neoPixels.clear();
 		
 		if (buttons.released(Button::home) || buttons.released(Button::b) || buttons.released(Button::menu)) {
 			sound.stopEfxOnly();
@@ -668,16 +718,16 @@ void Gamebuino::homeMenu(){
 				}
 				//update and save settings
 				if(changed == true){
-					neoPixels.setBrightness(neoPixelsIntensities[neoPixelsIntensity]);
+				//	neoPixels.setBrightness(neoPixelsIntensities[neoPixelsIntensity]);
 					settings.set(SETTING_NEOPIXELS_INTENSITY, neoPixelsIntensity);
 				}
 				//light up neopixels according to intensity
-				for(uint8_t i = 0; i < neoPixels.numPixels(); i++){
-					neoPixels.setPixelColor(i, 0xFF, 0xFF, 0xFF);
-				}
+				//for(uint8_t i = 0; i < neoPixels.numPixels(); i++){
+				//	neoPixels.setPixelColor(i, 0xFF, 0xFF, 0xFF);
+				//}
 				break;
 			////VOLUME
-			case 1:
+			case 1: 
 				//toggle mute/unmute
 				if (buttons.released(Button::a)) {
 					if (sound.isMute()) {
@@ -722,9 +772,9 @@ void Gamebuino::homeMenu(){
 #if !HOME_MENU_NO_EXIT
 			////EXIT
 			case 2:
-				if (buttons.pressed(Button::a)) {
-					changeGame();
-				}
+				//if (buttons.pressed(Button::a)) {
+				//	changeGame();
+				//}
 				break;
 #endif // !HOME_MENU_NO_EXIT
 			////SCREENSHOT
@@ -733,6 +783,7 @@ void Gamebuino::homeMenu(){
 #else // HOME_MENU_NO_EXIT
 			case 3:
 #endif // HOME_MENU_NO_EXIT
+/*
 				if (buttons.released(Button::a)) {
 					tft.setColor(WHITE);
 					tft.drawRect(currentItem*32 + xOffset, yOffset, 32, 32);
@@ -744,7 +795,8 @@ void Gamebuino::homeMenu(){
 					bool success = homeMenuGetUniquePath(name, 4, 5);
 					if (success) {
 						fileEndingGmvToBmp(name);
-						success = display.save(name);
+						//success = display.save(name);
+						success = 0;
 					}
 					// we temp. set inited to false so that delay() won't re-draw the screen
 					inited = false;
@@ -756,12 +808,14 @@ void Gamebuino::homeMenu(){
 					inited = true;
 				}
 				break;
+*/
 			////RECORD SCREEN
 #if HOME_MENU_NO_EXIT
 			case 3:
 #else // HOME_MENU_NO_EXIT
 			case 4:
 #endif // HOME_MENU_NO_EXIT
+/*
 				if (buttons.released(Button::a) || buttons.held(Button::a, 25)) {
 					tft.setColor(WHITE);
 					tft.drawRect(currentItem*32 + xOffset, yOffset, 32, 32);
@@ -806,6 +860,7 @@ void Gamebuino::homeMenu(){
 					}
 					inited = true;
 				}
+				*/
 				break;
 		}
 		
@@ -826,8 +881,8 @@ void Gamebuino::homeMenu(){
 				tft.drawRect((currentItem-1)*32 + xOffset, yOffset, 32, 32);
 				tft.drawRect(1 + (currentItem-1)*32 + xOffset, yOffset+1, 30, 30);
 			}
-			
-				
+
+
 			////VOLUME
 			if (currentItem == 1) {
 				if (sound.getVolume() && !sound.isMute()) {
@@ -839,14 +894,7 @@ void Gamebuino::homeMenu(){
 				}
 			}
 		}
-		
-		//draw light level
-		if ((currentItem == 0) && neoPixelsIntensity) {
-			tft.setColor(WHITE);
-			int lightHeight = neoPixelsIntensity * 32 / 4;
-			tft.drawRect(currentItem*32 + 30 + xOffset, yOffset + (32 - lightHeight), 2, lightHeight);
-		}
-		
+
 		//draw volume level
 		if ((currentItem == 1) && (sound.getVolume())) {
 			tft.setColor(WHITE);
@@ -854,8 +902,8 @@ void Gamebuino::homeMenu(){
 			tft.drawRect(currentItem*32 + 30 + xOffset, yOffset + (32 - volumeHeight), 2, volumeHeight);
 		}
 		
-		//updated neopixels
-		neoPixels.show();
+	    //updated neopixels
+		//neoPixels.show();
 		
 		changed = false;
 	}
@@ -865,11 +913,11 @@ void Gamebuino::changeGame(){
 	//clear the screen
 	tft.fill(Color::black);
 	//flash loader.bin
-	bootloader.loader();
+	// bootloader.loader();
 }
 
 void Gamebuino::getDefaultName(char* string){
-	settings.get(SETTING_DEFAULTNAME, string, 13);
+	// settings.get(SETTING_DEFAULTNAME, string, 13);
 }
 
 bool Gamebuino::collidePointRect(int16_t x1, int16_t y1 ,int16_t x2 ,int16_t y2, int16_t w, int16_t h){
@@ -954,11 +1002,3 @@ void noTone(uint32_t outputPin) {
 		Gamebuino_Meta::tone_identifier = -1;
 	}
 }
-
-extern "C" {
-void yield() {
-	if (Gamebuino_Meta::gbptr && Gamebuino_Meta::gbptr->inited && (Gamebuino_Meta::gbptr->frameEndFlag || Gamebuino_Meta::gbptr->frameStartMicros)) {
-		Gamebuino_Meta::gbptr->update();
-	}
-}
-} // extern "C"

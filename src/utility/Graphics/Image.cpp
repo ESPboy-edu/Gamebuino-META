@@ -33,6 +33,8 @@ Authors:
 #define min(x, y) ((x < y) ? x : y)
 #endif
 
+//#define RAM_BOUNDARY  0x3FFAE000
+
 namespace Gamebuino_Meta {
 
 extern Gamebuino* gbptr;
@@ -64,9 +66,9 @@ void Frame_Handler::allocateBuffer() {
 		img->_buffer = buf;
 		return;
 	}
-	if (buf && (uint32_t)buf >= 0x20000000) {
-		gb_free(buf);
-	}
+	//if (buf && (uint32_t)buf >= RAM_BOUNDARY) {
+	//	gb_free(buf);
+	//}
 	if ((buf = (uint16_t *)gb_malloc(bytes))) {
 		memset(buf, 0, bytes);
 		bufferSize = bytes;
@@ -172,7 +174,12 @@ void Image::init(uint16_t w, uint16_t h, ColorMode col, uint16_t _frames, uint8_
 	frame_looping = fl;
 	frame_handler = new Frame_Handler_RAM(this);
 	frame_loopcounter = 0;
-	last_frame = (gbptr->frameCount & 0xFF) - 1;
+	if (gbptr != nullptr) {
+		last_frame = (gbptr->frameCount & 0xFF) - 1;
+	}
+	else {
+		
+	}
 	setFrame(0);
 }
 
@@ -181,6 +188,8 @@ Image::Image(const uint16_t* buffer) : Graphics(0, 0) {
 	freshStart();
 	init(buffer);
 }
+
+
 void Image::init(const uint16_t* buffer) {
 	if (isObjectCopy) {
 		return;
@@ -189,9 +198,9 @@ void Image::init(const uint16_t* buffer) {
 		delete frame_handler;
 	}
 	bufferSize = 0;
-	if (_buffer && (uint32_t)_buffer >= 0x20000000) {
-		gb_free(_buffer);
-	}
+	//if (_buffer && (uint32_t)_buffer >= RAM_BOUNDARY) {
+	//	gb_free(_buffer);
+	//}
 	uint16_t* buf = (uint16_t*)buffer;
 	_width = *(buf++);
 	_height = *(buf++);
@@ -221,6 +230,8 @@ Image::Image(const uint8_t* buffer) : Graphics(0, 0) {
 	freshStart();
 	init(buffer);
 }
+
+
 void Image::init(const uint8_t* buffer) {
 	if (isObjectCopy) {
 		return;
@@ -228,9 +239,9 @@ void Image::init(const uint8_t* buffer) {
 	if (frame_handler) {
 		delete frame_handler;
 	}
-	if (bufferSize && _buffer && (uint32_t)_buffer >= 0x20000000) {
-		gb_free(_buffer);
-	}
+	//if (bufferSize && _buffer && (uint32_t)_buffer >= RAM_BOUNDARY) {
+	//	gb_free(_buffer);
+	//}
 	
 	uint8_t* buf = (uint8_t*)buffer;
 	_width = *(buf++);
@@ -256,6 +267,83 @@ void Image::init(const uint8_t* buffer) {
 	last_frame = (gbptr->frameCount & 0xFF) - 1;
 	setFrame(0);
 }
+
+/*
+void Image::init(const uint8_t* buffer) {
+	if (isObjectCopy) {
+		return;
+	}
+	if (frame_handler) {
+		delete frame_handler;
+	}
+	//if (bufferSize && _buffer && (uint32_t)_buffer >= RAM_BOUNDARY) {
+	//	gb_free(_buffer);
+	//}
+	
+	uint8_t* buf = (uint8_t*)buffer;
+	_width = pgm_read_byte(buf++);
+	_height = pgm_read_byte(buf++);
+	frames = pgm_read_byte(buf++);
+	frames += (pgm_read_byte(buf++)) << 8;
+	frame_looping = pgm_read_byte(buf++);
+	transparentColor = pgm_read_byte(buf++);
+	colorMode = (ColorMode)(pgm_read_byte(buf++));
+	if (colorMode == ColorMode::index) {
+		if (transparentColor > 0x0F) {
+			useTransparentIndex = false;
+		} else {
+			uint8_t c = transparentColor;
+			transparentColorIndex = c;
+			useTransparentIndex = true;
+		}
+	}
+	
+	_buffer = (uint16_t*)buf;
+	frame_handler = new Frame_Handler_Mem(this);
+	frame_loopcounter = 0;
+	last_frame = (gbptr->frameCount & 0xFF) - 1;
+	setFrame(0);
+}
+*/
+/*
+void Image::init(const uint16_t* buffer) {
+	if (isObjectCopy) {
+		return;
+	}
+	if (frame_handler) {
+		delete frame_handler;
+	}
+	//if (bufferSize && _buffer && (uint32_t)_buffer >= RAM_BOUNDARY) {
+	//	gb_free(_buffer);
+	//}
+	
+	uint8_t* buf = (uint8_t*)buffer;
+	_width = pgm_read_byte(buf++);
+	_height = pgm_read_byte(buf++);
+	frames = pgm_read_byte(buf++);
+	frames += (pgm_read_byte(buf++)) << 8;
+	frame_looping = pgm_read_byte(buf++);
+	transparentColor = pgm_read_byte(buf++);
+	colorMode = (ColorMode)(pgm_read_byte(buf++));
+	if (colorMode == ColorMode::index) {
+		if (transparentColor > 0x0F) {
+			useTransparentIndex = false;
+		} else {
+			uint8_t c = transparentColor;
+			transparentColorIndex = c;
+			useTransparentIndex = true;
+		}
+	}
+	
+	_buffer = (uint16_t*)buf;
+	frame_handler = new Frame_Handler_Mem(this);
+	frame_loopcounter = 0;
+	last_frame = (gbptr->frameCount & 0xFF) - 1;
+	setFrame(0);
+}
+*/
+
+
 
 // SD constructors
 Image::Image(char* filename, uint8_t fl) : Graphics(0, 0) {
@@ -300,10 +388,10 @@ Image::~Image() {
 	if (isObjectCopy) {
 		return;
 	}
-	if (_buffer && (uint32_t)_buffer >= 0x20000000) {
-		gb_free(_buffer);
-		_buffer = 0;
-	}
+	//if (_buffer && (uint32_t)_buffer >= RAM_BOUNDARY) {
+	//	gb_free(_buffer);
+	//	_buffer = 0;
+	//}
 	delete frame_handler;
 }
 
@@ -838,10 +926,104 @@ void Image::drawBitmap(int8_t x, int8_t y, const uint8_t *bitmap) {
 	}
 }
 
+
+
+/*
+void Image::drawBitmap(int8_t x, int8_t y, PGM_P bitmap) {
+	uint8_t w = pgm_read_byte (bitmap);
+	bitmap++;
+	uint8_t h = pgm_read_byte (bitmap);
+	bitmap++;
+	
+	if ((x >= _width) || (y >= _height) || (x + w <= 0) || (x + h <= 0)) {
+		return;
+	}
+	uint8_t bw = (w + 7) / 8;
+	uint8_t _x = x;
+	if (colorMode == ColorMode::index) {
+		uint8_t bw = (w + 7) / 8;
+		if (y < 0) {
+			h += y;
+			bitmap -= bw*y;
+			y = 0;
+		}
+		if (y + h > _height) {
+			h = _height - y;
+		}
+		uint8_t x1 = max(0, x);
+		uint8_t x2 = min(_width, x + w);
+		
+		bitmap += (x1 - x) / 8;
+		uint8_t first_bitmap_mask = 0x80 >> ((x1 - x) & 7);
+		uint16_t bufBytewidth = ((_width + 1) / 2);
+		uint8_t* buf = (uint8_t*)_buffer;
+		buf += bufBytewidth * y + x1 / 2;
+		bool screen_alt_initial = (x1 % 2) == 0;
+		
+		
+		uint8_t b1 = color.i;
+		uint8_t b2 = color.iu;
+		
+		for (uint8_t dy=0; dy<h; dy++, bitmap+=bw, buf+=bufBytewidth) {
+			const char* bitmap_ptr = bitmap;
+			uint8_t bitmap_mask = first_bitmap_mask;
+			uint8_t* screen_buf = buf;
+			uint8_t pixels =  pgm_read_byte (bitmap_ptr);
+			bitmap_ptr++;
+			bool screen_alt = screen_alt_initial;
+			for (uint8_t sx=x1; sx<x2; sx++) {
+				
+				if (screen_alt) {
+					if (pixels & bitmap_mask) {
+						*screen_buf = (*screen_buf & 0x0F) | b2;
+					}
+				} else {
+					if (pixels & bitmap_mask) {
+						*screen_buf = (*screen_buf & 0xF0) | b1;
+					}
+					screen_buf++;
+				}
+				screen_alt = !screen_alt;
+				
+				bitmap_mask >>= 1;
+				if (!bitmap_mask) {
+					bitmap_mask = 0x80;
+					pixels =  pgm_read_byte (bitmap_ptr);
+					bitmap_ptr++;
+				}
+			}
+		}
+	} else {
+		uint8_t dw = 8 - (w%8);
+		for (uint8_t j = 0; j < h; j++) {
+			x = _x;
+			for (uint8_t i = 0; i < bw;) {
+				uint8_t b =  pgm_read_byte (bitmap);
+				bitmap++;
+				i++;
+				for (uint8_t k = 0; k < 8; k++) {
+					if (i == bw && k == dw) {
+						x += (w%8);
+						break;
+					}
+					if (b&0x80) {
+						drawPixel(x, y);
+					}
+					b <<= 1;
+					x++;
+				}
+			}
+			y++;
+		}
+	}
+}
+*/
+
 void Image::drawBitmap(int8_t x, int8_t y, const uint8_t *bitmap,
 	uint8_t rotation, uint8_t flip) {
 	Graphics::drawBitmap(x, y, bitmap, rotation, flip);
 }
+
 
 void Image::drawImage(int16_t x, int16_t y, Image& img) {
 	//draw INDEX => RGB, non-transparent

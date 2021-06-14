@@ -26,6 +26,12 @@ Authors:
 
 #include "../../config/config.h"
 #include "Sound_FX.h"
+//#include "freertos/FreeRTOS.h"
+//#include "freertos/task.h"
+//#include "driver/i2s.h"
+//#include "esp_system.h"
+
+#define SOUNDPIN    (D3)
 
 namespace Gamebuino_Meta {
 
@@ -101,6 +107,7 @@ public:
 	bool isPlaying(int8_t i);
 	
 	void update();
+	void loop();
 	void mute();
 	void unmute();
 	bool isMute();

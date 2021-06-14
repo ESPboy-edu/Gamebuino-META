@@ -25,25 +25,37 @@ Authors:
 #define	_GAMEBUINO_META_BUTTONS_H_
 
 #include "../../config/config.h"
+#include <Adafruit_MCP23017.h> //to control buttons
+
+#define PAD_LEFT        0x01
+#define PAD_UP          0x02
+#define PAD_DOWN        0x04
+#define PAD_RIGHT       0x08
+#define PAD_ACT         0x10
+#define PAD_ESC         0x20
+#define PAD_LFT         0x40
+#define PAD_RGT         0x80
+#define PAD_ANY         0xff
+
 
 namespace Gamebuino_Meta {
+
 const uint8_t NUM_BTN = 8;
-const uint8_t BTN_CS = 25;
 
 enum class Button : uint8_t {
-	down = 0,
-	left,
-	right,
-	up,
-	a,
-	b,
-	menu,
-	home,
+	home  = 7,
+	menu  = 6,
+	b     = 5,
+	a     = 4,
+	up    = 3,
+	right = 2,
+	left  = 1,
+	down  = 0,
 };
 
 class Buttons {
 public:
-	void begin();
+	void begin(Adafruit_MCP23017 *mcp_);
 	void update();
 	bool pressed(Button button);
 	bool released(Button button);
@@ -51,6 +63,9 @@ public:
 	bool repeat(Button button, uint16_t period);
 	uint16_t timeHeld(Button button);
 	uint16_t states[NUM_BTN];
+	
+protected:
+    Adafruit_MCP23017 *thismcp;
 };
 
 } // namespace Gamebuino_Meta

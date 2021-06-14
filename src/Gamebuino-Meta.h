@@ -24,78 +24,65 @@ Authors:
 #ifndef _GAMEBUINO_META_H_
 #define	_GAMEBUINO_META_H_
 
-#ifndef __SKETCH_NAME__
-#error "Please compile using the Gamebuino Meta board!"
-#endif
-
+#include "Arduino.h"
 #include "config/config.h"
 
 #if USE_SDFAT
-#include <SPI.h>
-#include "utility/SdFat.h"
-extern SdFat SD;
+//#include <FS.h>
+//#include <SD.h>
+//#include <SPI.h>
+#include <LittleFS.h>
 #endif
 
 #include "utility/Buttons.h"
 #include "utility/Sound.h"
-#include "utility/Save.h"
-#include "utility/Bootloader.h"
 #include "utility/Gui.h"
 #include "utility/MetaMode.h"
 #include "utility/Collide.h"
 
-#include "utility/Adafruit_NeoPixel.h"
+//#include <Adafruit_NeoPixel.h>
 #include "utility/Display-ST7735.h"
 #include "utility/Graphics.h"
 #include "utility/Image.h"
 #include "utility/Language.h"
+#include "utility/Save.h"
+#include <Adafruit_MCP23017.h> //to control buttons
+#include <Adafruit_MCP4725.h>  //to control the LCD display backlit
+#include <ESP8266WiFi.h>       //to control WiFi
+#include "utility/ESPboyLED.h"
 
-// make sure that sketches don't screw things up, the SAMD architecture has only one addressable space, thus making the PROGMEM concept unneded
-#ifndef F
-#define F(x) x
-#endif
 
-#ifndef PROGMEM
-#define PROGMEM  
-#endif
+#define MCP23017address 0 // actually it's 0x20 but in <Adafruit_MCP23017.h> lib there is (x|0x20) :)
+#define MCP4725address  0x60
 
-#ifdef GAMEBUINO_COMPAT_MODE
-// we need the display definition from the compat lib....
-// we need to do it here as the arduino IDE doesn't add all include paths from the start
-// and thus Gamebuino_Compat::Display will not find Gamebuino_Meta::Image yet
-#include <utility/Display_Compat.h>
-#include <utility/Sound_Compat.h>
-#endif
+#define CSTFTPIN       8 //Chip Select pin for LCD (it's on the MCP23017 GPIO expander GPIO8)
 
 namespace Gamebuino_Meta {
-#define TFT_CS		(30u)
-#define TFT_DC		(31u)
-#define SD_CS		(26u)
-#define NEOPIX_PIN	(38u)
-#define BAT_PIN		(A5)
+#define NEOPIX_PIN	(D4)
+#define BAT_PIN		(A0)
+#define SOUNDPIN    (D3)
 
 #define wrap(i, imax) ((imax+i)%(imax))
 
+
 class Gamebuino {
 public:
+    Adafruit_MCP23017 mcp;
+    Adafruit_MCP4725 dac;
 	Buttons buttons;
-#ifdef GAMEBUINO_COMPAT_MODE
-	Gamebuino_Compat::Display display;
-	Gamebuino_Compat::Sound sound;
-#else
 	Image display = DISPLAY_CONSTRUCTOR;
 	Sound sound;
-#endif
-	Display_ST7735 tft = Display_ST7735(TFT_CS, TFT_DC);
+	Display_ST7735 tft = Display_ST7735(-1, 16);
 	Image lights = Image(2, 4, ColorMode::rgb565);
 	Save save;
 	Save settings;
 	Language language;
-	Bootloader bootloader;
 	Gui gui;
 	MetaMode metaMode;
 	Collide collide;
+	ESPboyLED myLED;
 
+    Gamebuino();
 	void begin();
 	void startScreen();
 	void titleScreen();
@@ -137,10 +124,11 @@ public:
 	bool inited = false;
 	bool sdInited = false;
 private:
-	Adafruit_NeoPixel neoPixels = Adafruit_NeoPixel(8, NEOPIX_PIN, NEO_GRB + NEO_KHZ800);
+    //Adafruit_NeoPixel neoPixels = Adafruit_NeoPixel(1, NEOPIX_PIN, NEO_GRB + NEO_KHZ800);
 	uint8_t timePerFrame;
 	uint32_t nextFrameMillis;
 	void drawLogo(Graphics& g, int8_t x, int8_t y, uint8_t scale);
+	void drawESPboyLogo(Graphics& g);
 	int16_t framesDisplayRecording = -1;
 #ifdef FOLDER_NAME
 	const char folder_name[sizeof FOLDER_NAME] = FOLDER_NAME;

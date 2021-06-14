@@ -27,7 +27,8 @@ Authors:
 #include "../Image.h"
 
 #if USE_SDFAT
-#include "../SdFat.h"
+//#include <SD.h>
+#include <LittleFS.h>
 #endif
 
 namespace Gamebuino_Meta {

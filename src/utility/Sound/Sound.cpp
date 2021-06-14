@@ -27,6 +27,9 @@ Authors:
 #include "Raw.h"
 #include "../Sound-SD.h"
 
+void I2S_Init();
+void I2S_Write(char* data, int numData);
+
 namespace Gamebuino_Meta {
 
 #if SOUND_ENABLE_FX
@@ -62,58 +65,10 @@ Sound_Handler* handlers[SOUND_CHANNELS];
 
 FX_Channel fx_channel = { 0 };
 
-bool tcIsSyncing() {
-	return TC5->COUNT16.STATUS.reg & TC_STATUS_SYNCBUSY;
-}
+//hw_timer_t * timer = nullptr; //RS
+//portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED; //RS
 
-void tcStart() {
-	// Enable TC
-
-	TC5->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
-	while (tcIsSyncing());
-}
-
-void tcReset() {
-	// Reset TCx
-	TC5->COUNT16.CTRLA.reg = TC_CTRLA_SWRST;
-	while (tcIsSyncing());
-	while (TC5->COUNT16.CTRLA.bit.SWRST);
-}
-
-void tcDisable() {
-	// Disable TC5
-	TC5->COUNT16.CTRLA.reg &= ~TC_CTRLA_ENABLE;
-	while (tcIsSyncing());
-}
-
-void tcConfigure(uint32_t sampleRate) {
-	// Enable GCLK for TCC2 and TC5 (timer counter input clock)
-	GCLK->CLKCTRL.reg = (uint16_t) (GCLK_CLKCTRL_CLKEN | GCLK_CLKCTRL_GEN_GCLK0 | GCLK_CLKCTRL_ID(GCM_TC4_TC5)) ;
-	while (GCLK->STATUS.bit.SYNCBUSY);
-
-	tcReset();
-
-	// Set Timer counter Mode to 16 bits
-	TC5->COUNT16.CTRLA.reg |= TC_CTRLA_MODE_COUNT16;
-
-	// Set TC5 mode as match frequency
-	TC5->COUNT16.CTRLA.reg |= TC_CTRLA_WAVEGEN_MFRQ;
-
-	TC5->COUNT16.CTRLA.reg |= TC_CTRLA_PRESCALER_DIV1 | TC_CTRLA_ENABLE;
-
-	TC5->COUNT16.CC[0].reg = (uint16_t) (SystemCoreClock / sampleRate - 1);
-	while (tcIsSyncing());
-	
-	// Configure interrupt request
-	NVIC_DisableIRQ(TC5_IRQn);
-	NVIC_ClearPendingIRQ(TC5_IRQn);
-	NVIC_SetPriority(TC5_IRQn, 0);
-	NVIC_EnableIRQ(TC5_IRQn);
-
-	// Enable the TC5 interrupt request
-	TC5->COUNT16.INTENSET.bit.MC0 = 1;
-	while (tcIsSyncing());
-}
+void IRAM_ATTR Audio_Handler();
 
 int8_t findEmptyChannel() {
 	for (uint8_t i = 0; i < SOUND_CHANNELS; i++) {
@@ -140,6 +95,7 @@ Sound_Handler::~Sound_Handler() {
 uint32_t Sound_Handler::getPos() {
 	return 0xFFFFFFFF;
 }
+
 
 void Sound_Handler::setChannel(Sound_Channel* _channel) {
 	channel = _channel;
@@ -220,12 +176,12 @@ int8_t Sound::play(Sound_Handler* handler, bool loop) {
 }
 
 // Get optimized away if fx is not used
-uint32_t fx_sound_buffer[SOUND_FX_BUFFERSIZE/4];
+uint32_t fx_sound_buffer[SOUND_BUFFERSIZE/4];
 
 void init_fx_channel() {
 #if SOUND_CHANNELS > 0
 	if (fx_channel.handler == nullptr){
-		fx_channel.size = SOUND_FX_BUFFERSIZE;
+		fx_channel.size = SOUND_BUFFERSIZE;
 		fx_channel.buffer = (int8_t*)fx_sound_buffer;
 		memset(fx_channel.buffer, 0, fx_channel.size);
 		fx_channel.index = 0;
@@ -250,7 +206,12 @@ void Sound::fx(const Sound_FX * const fx) {
 }
 
 
+void PlaytoneBase(uint32_t freq, int32_t dur){
+  tone(SOUNDPIN, freq, dur);
+};
+
 int8_t Sound::tone(uint32_t frequency, int32_t duration) {
+    PlaytoneBase (frequency, duration);
 #if SOUND_CHANNELS > 0
 	int8_t i = findEmptyChannel();
 	if (i < 0 || i >= SOUND_CHANNELS) {
@@ -278,6 +239,9 @@ void Sound::stop(int8_t i) {
 }
 
 int8_t Sound::playOK() {
+   PlaytoneBase(200,100);
+   delay(50);
+   PlaytoneBase(400,100);
 #if SOUND_ENABLE_FX
 	fx(playOKFX);
 	return -1;  // There only is one FX_Channel, and playing Sounf_fx cannot fail (the latest sound_fx is played)
@@ -287,6 +251,10 @@ int8_t Sound::playOK() {
 }
 
 int8_t Sound::playCancel() {
+   PlaytoneBase(200,100);
+   delay(100);
+   PlaytoneBase(100,100);
+   delay(100);
 #if SOUND_ENABLE_FX
 	fx(playCancelFX);
 	return -1;  // There only is one FX_Channel, and playing Sounf_fx cannot fail (the latest sound_fx is played)
@@ -296,6 +264,7 @@ int8_t Sound::playCancel() {
 }
 
 int8_t Sound::playTick() {
+  PlaytoneBase(50,50);
 #if SOUND_ENABLE_FX
 	fx(playTickFX);
 	return -1;  // There only is one FX_Channel, and playing Sounf_fx cannot fail (the latest sound_fx is played)
@@ -324,6 +293,11 @@ void Sound::update() {
 	}
 #endif // SOUND_CHANNELS
 }
+
+void Sound::loop() {
+	Audio_Handler();
+}
+
 
 void Sound::mute() {
 	muted = true;
@@ -377,119 +351,130 @@ uint32_t Sound::getPos(int8_t i) {
 
 #if SOUND_CHANNELS > 0
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-void Audio_Handler (void) __attribute__((optimize("-O3")));
+uint8_t flowdown = 0;
+int dataSize = 2000;
 
-uint16_t flowdown = 0;
-
-void Audio_Handler (void) {
+void IRAM_ATTR Audio_Handler() {
 	if (!globalVolume || muted) {
-		TC5->COUNT16.INTFLAG.bit.MC0 = 1;
 		return;
 	}
-	int16_t output = 0;
-	for (uint8_t i = 0; i < SOUND_CHANNELS; i++) {
-		if (channels[i].use) {
-			switch (channels[i].type) {
-			case Sound_Channel_Type::raw:
-				if (efx_only) {
+
+	int8_t data[dataSize];
+	memset(data,0,sizeof(data));
+	int counter = 0;
+
+	for (int i = 0; i < dataSize; i++) {
+		if (!globalVolume || muted) {
+			return;
+		}
+
+		int8_t output = 0;
+		for (uint8_t i = 0; i < SOUND_CHANNELS; i++) {
+			if (channels[i].use) {
+				switch (channels[i].type) {
+				case Sound_Channel_Type::raw:
+					if (efx_only) {
+						break;
+					}
+					if (channels[i].index < channels[i].total - 1) {
+						output += (channels[i].buffer[channels[i].index++] - 0x80);
+					} else if (!channels[i].last) {
+						channels[i].index = 0;
+						output += (channels[i].buffer[channels[i].index++] - 0x80);
+					} else if (channels[i].loop) {
+						handlers[i]->rewind();
+					} else {
+						channels[i].use = false;
+					}
+					break;
+				case Sound_Channel_Type::square:
+					if (efx_only && channels[i].loop) {
+						break;
+					}
+					if (channels[i].index++ >= channels[i].total) {
+						channels[i].last = !channels[i].last;
+						channels[i].index = 0;
+					}
+					if (channels[i].last) {
+						output -= channels[i].amplitude;
+					} else {
+						output += channels[i].amplitude;
+					}
 					break;
 				}
-				if (channels[i].index < channels[i].total - 1) {
-					output += (channels[i].buffer[channels[i].index++] - 0x80);
-				} else if (!channels[i].last) {
-					channels[i].index = 0;
-					output += (channels[i].buffer[channels[i].index++] - 0x80);
-				} else if (channels[i].loop) {
-					handlers[i]->rewind();
-				} else {
-					channels[i].use = false;
-				}
-				break;
-			case Sound_Channel_Type::square:
-				if (efx_only && channels[i].loop) {
-					break;
-				}
-				if (channels[i].index++ >= channels[i].total) {
-					channels[i].last = !channels[i].last;
-					channels[i].index = 0;
-				}
-				if (channels[i].last) {
-					output -= channels[i].amplitude;
-				} else {
-					output += channels[i].amplitude;
-				}
-				break;
 			}
 		}
-	}
 
-	if (fx_channel.handler != nullptr) {
-		output += fx_channel.buffer[fx_channel.index];
-		fx_channel.index++;
-		if (fx_channel.index >= fx_channel.size) {
-			fx_channel.index = 0;
+		if (fx_channel.handler != nullptr) {
+			output += fx_channel.buffer[fx_channel.index];
+			fx_channel.index++;
+			if (fx_channel.index >= fx_channel.size) {
+				fx_channel.index = 0;
+			}
 		}
-	}
 
-	if (output) {
-		//we multiply by 4 to use the whole 0..1024 DAC range even with 8-bit 0..255 waves
-		//then we attenuate the signal. The attenuation is not linear because human ear's response isn't ;)
-		//we use a >> instead of division for better performances as this interrupt runs quite often
-		//RAW VALUE		VOLUME		OUTPUT
-		//255			8			1024	//amplify sound to use full DAC range
-											//might cause clipping if several sounds are played simultaneously
-		//255			7			512
-		//255			6			255		//keep sound as original
-		//255			5			127		//reduced volume
-		
-		output = (output * 4) >> (8 - globalVolume);
-		//offset the signed value to be centered around 512
-		//as the 10-bit DAC output is between 0 and 1024
-		
-		// we need to slowly fade up our zero-level to not have any plop when starting to play sound
-		if (flowdown < 512) {
-			flowdown++;
-		}
-		output += flowdown;
-		if (output < 0) {
-			output = 0;
-		}
-		analogWrite(A0, output);
-	} else {
-		// we need to output 0 when not in use to not have weird sound effects with the neoLeds as the interrupt isn't 100% constant there.
-		// however, jumping down from 512 (zero-positin) to 0 would give a plop
-		// so instead we gradually decrease instead
-		analogWrite(A0, flowdown); // zero-position
-		if (flowdown > 0) {
-			flowdown--;
-		}
-	}
-	TC5->COUNT16.INTFLAG.bit.MC0 = 1;
+		if (output) {
+			if (flowdown < 0x7F) {
+				flowdown++;
+			}
+			output += flowdown;
+			if (output < 0) {
+				output = 0;
+			}
+			data[counter] = output;
+			counter++;
+		} else {
+			data[counter] = (int8_t)flowdown;
+			counter++;
+
+			if (flowdown > 0) {
+				flowdown--;
+			}
+		}		
+	}	
+
+    //i2s_write_bytes((i2s_port_t)0, (const char *)data, dataSize, portMAX_DELAY);
 }
-
-void TC5_Handler (void) __attribute__ ((alias("Audio_Handler")));
-
-#ifdef __cplusplus
-}
-#endif
 
 void dacConfigure(void) {
-	if (PM->RCAUSE.bit.POR) {
-		flowdown = analogRead(A0); // initial flowdown to prevent popping sound
+	if (true) {
+		flowdown = analogRead(26); // initial flowdown to prevent popping sound
 	}
-	analogWriteResolution(10);
 }
 
 #endif // SOUND_CHANNELS
 
+void I2S_Init() {
+	/*
+	i2s_config_t i2s_config = {
+		.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_TX | I2S_MODE_DAC_BUILT_IN),
+		.sample_rate = (44100 / 4),
+		.bits_per_sample = I2S_BITS_PER_SAMPLE_16BIT,
+		.channel_format = I2S_CHANNEL_FMT_RIGHT_LEFT,
+		.communication_format = (i2s_comm_format_t)(I2S_COMM_FORMAT_I2S_MSB),
+		.intr_alloc_flags = 0,
+		.dma_buf_count = 16,
+		.dma_buf_len = 60
+	};
+
+	i2s_driver_install((i2s_port_t)0, &i2s_config, 0, NULL);
+	i2s_set_pin((i2s_port_t)0, NULL);
+	i2s_set_dac_mode(I2S_DAC_CHANNEL_BOTH_EN);
+*/
+}
+
+void I2S_Write(char* data, int numData) {
+  //  i2s_write_bytes((i2s_port_t)0, (const char *)data, numData, portMAX_DELAY);
+}
+
+
+
 void Sound::begin() {
 #if SOUND_CHANNELS > 0
-	dacConfigure();
-	tcConfigure(SOUND_FREQ);
-	tcStart();
+	// dacConfigure();
+	I2S_Init();
+	// tcConfigure(SOUND_FREQ);
+	// tcStart();
 #endif
 }
 

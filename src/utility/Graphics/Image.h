@@ -26,6 +26,7 @@ Authors:
 
 #include "../../config/config.h"
 #include "Graphics.h"
+#include "Arduino.h"
 
 namespace Gamebuino_Meta {
 
@@ -74,6 +75,7 @@ public:
 	void init(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl = DEFAULT_FRAME_LOOP);
 	Image(uint16_t w, uint16_t h, ColorMode col = ColorMode::rgb565, uint16_t frames = 1, uint8_t fl = DEFAULT_FRAME_LOOP);
 	void init(uint16_t w, uint16_t h, ColorMode col = ColorMode::rgb565, uint16_t frames = 1, uint8_t fl = DEFAULT_FRAME_LOOP);
+
 
 	// flash constructors
 	Image(const uint16_t* buffer);

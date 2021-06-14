@@ -24,8 +24,8 @@ Authors:
 #include "../Misc.h"
 
 #if USE_SDFAT
-#include "../SdFat.h"
-extern SdFat SD;
+//#include <SD.h>
+#include <LittleFS.h>
 #endif
 
 namespace Gamebuino_Meta {
@@ -119,7 +119,7 @@ void Recording_Image::setBmpFilename(char* filename) {
 #if USE_SDFAT
 	bmp_filename = (char*)gb_malloc(strlen(filename) + 1);
 	strcpy(bmp_filename, filename);
-	File f = SD.open(bmp_filename, FILE_WRITE);
+	File f = LittleFS.open(bmp_filename, "w");
 	f.write((uint8_t)0); // make sure we already create it
 	f.close();
 #endif // USE_SDFAT
@@ -138,7 +138,7 @@ bool Graphics_SD::startRecording(Image* img, char* filename) {
 		return false; // no empty slot
 	}
 	bool convert_bmp = true;
-	if (convert_bmp && SD.exists(filename) && !SD.remove(filename)) {
+	if (convert_bmp && LittleFS.exists(filename) && !LittleFS.remove(filename)) {
 		return false;
 	}
 	GMV gmv = GMV(img);
@@ -146,7 +146,7 @@ bool Graphics_SD::startRecording(Image* img, char* filename) {
 		return false;
 	}
 	Recording_Image* rec = new Recording_Image(gmv);
-	if (convert_bmp && !SD.exists(filename)) {
+	if (convert_bmp && !LittleFS.exists(filename)) {
 		rec->setBmpFilename(filename);
 	}
 	recording_images[i] = rec;
@@ -179,7 +179,7 @@ void Graphics_SD::stopRecording(Image* img, bool output) {
 bool Graphics_SD::save(Image* img, char* filename) {
 #if USE_SDFAT
 	bool convert_bmp = true; // for saving single frames we always convert
-	if (convert_bmp && SD.exists(filename) && !SD.remove(filename)) {
+	if (convert_bmp && LittleFS.exists(filename) && !LittleFS.remove(filename)) {
 		return false;
 	}
 	GMV gmv = GMV(img);
@@ -187,7 +187,7 @@ bool Graphics_SD::save(Image* img, char* filename) {
 		return false;
 	}
 	Recording_Image rec = Recording_Image(gmv);
-	if (convert_bmp && !SD.exists(filename)) {
+	if (convert_bmp && !LittleFS.exists(filename)) {
 		rec.setBmpFilename(filename);
 	}
 	rec.update();

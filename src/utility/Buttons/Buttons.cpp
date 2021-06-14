@@ -23,53 +23,41 @@ Authors:
 
 #include "Buttons.h"
 
-#if CUSTOM_BUTTON_FUNCTIONS
-extern "C" {
-void gamebuino_meta_buttons_init(void);
-uint8_t gamebuino_meta_buttons_update(void);
-}
-#else
-#include <SPI.h>
-#endif
 
 namespace Gamebuino_Meta {
 
 
-void Buttons::begin() {
-#if CUSTOM_BUTTON_FUNCTIONS
-	gamebuino_meta_buttons_init();
-#else // CUSTOM_BUTTON_FUNCTIONS
-	SPI.begin();
-	pinMode(BTN_CS, OUTPUT);
-	digitalWrite(BTN_CS, HIGH);
-#endif // CUSTOM_BUTTON_FUNCTIONS
+void Buttons::begin(Adafruit_MCP23017 *mcp_) { 
+  thismcp=mcp_;
+  for (int i=0;i<8;i++){  
+     thismcp->pinMode(i, INPUT);
+     thismcp->pullUp(i, HIGH);
+  }
 }
+
 
 /*
  * reads each button states and store it
  */
 void Buttons::update() {
-#if CUSTOM_BUTTON_FUNCTIONS
-	uint8_t buttonsData = gamebuino_meta_buttons_update();
-#else // CUSTOM_BUTTON_FUNCTIONS
-	//start SPI
-	SPI.beginTransaction(SPISettings(12000000, MSBFIRST, SPI_MODE0));
-	digitalWrite(BTN_CS, LOW);
-	//wait for PL to recover
-	delayMicroseconds(1);
-	//get the buttons states from the shift register
-	uint8_t buttonsData = SPI.transfer(1);
-	//end SPI
-	digitalWrite(BTN_CS, HIGH);
-	SPI.endTransaction();
-#endif // CUSTOM_BUTTON_FUNCTIONS
-	//Print raw data to native USB
-	//SerialUSB.println(buttonsData,BIN);
-  
+	uint8_t butstate = 255;
+	uint8_t readstate;
+	
+	readstate = ~(thismcp->readGPIOAB() & 255);
+
+	if (readstate&PAD_LEFT) 	bitClear(butstate, (uint8_t)BUTTON_LEFT);
+	if (readstate&PAD_RIGHT) 	bitClear(butstate, (uint8_t)BUTTON_RIGHT);
+	if (readstate&PAD_UP) 		bitClear(butstate, (uint8_t)BUTTON_UP);
+	if (readstate&PAD_DOWN) 	bitClear(butstate, (uint8_t)BUTTON_DOWN);
+	if (readstate&PAD_ACT) 		bitClear(butstate, (uint8_t)BUTTON_A);
+	if (readstate&PAD_ESC) 		bitClear(butstate, (uint8_t)BUTTON_B); 
+	if (readstate&PAD_LFT) 		bitClear(butstate, (uint8_t)BUTTON_HOME); 
+	if (readstate&PAD_RGT)	 	bitClear(butstate, (uint8_t)BUTTON_MENU); 
+
+	uint8_t buttonsData = butstate;
+	
 	for (uint8_t thisButton = 0; thisButton < NUM_BTN; thisButton++) {
-		//extract the corresponding bit corresponding to the current button
-		//Inverted logic : button pressed = low state = 0
-		bool pressed = (buttonsData & (1 << thisButton)) == 0;
+		bool pressed = !bitRead(buttonsData, thisButton);
 		
 		if (pressed) { //if button pressed
 			if (states[thisButton] < 0xFFFE) { // we want 0xFFFE to be max value for the counter
