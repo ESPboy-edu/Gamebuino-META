@@ -239,9 +239,9 @@ void Sound::stop(int8_t i) {
 }
 
 int8_t Sound::playOK() {
-   PlaytoneBase(200,100);
+   PlaytoneBase(200,50);
    delay(50);
-   PlaytoneBase(400,100);
+   PlaytoneBase(400,50);
 #if SOUND_ENABLE_FX
 	fx(playOKFX);
 	return -1;  // There only is one FX_Channel, and playing Sounf_fx cannot fail (the latest sound_fx is played)
@@ -251,10 +251,9 @@ int8_t Sound::playOK() {
 }
 
 int8_t Sound::playCancel() {
-   PlaytoneBase(200,100);
-   delay(100);
-   PlaytoneBase(100,100);
-   delay(100);
+   PlaytoneBase(200,50);
+   delay(50);
+   PlaytoneBase(100,50);
 #if SOUND_ENABLE_FX
 	fx(playCancelFX);
 	return -1;  // There only is one FX_Channel, and playing Sounf_fx cannot fail (the latest sound_fx is played)
