@@ -161,8 +161,11 @@ Gamebuino::Gamebuino(){
 
 //mcp23017 init for buttons, LED LOCK and TFT Chip Select pins
   mcp.begin(MCP23017address);
+  delay(100);
   mcp.pinMode(CSTFTPIN, OUTPUT);
+  delay(100);
   mcp.digitalWrite(CSTFTPIN, LOW);
+  delay(100);
   myLED.begin(&mcp);
   
   
