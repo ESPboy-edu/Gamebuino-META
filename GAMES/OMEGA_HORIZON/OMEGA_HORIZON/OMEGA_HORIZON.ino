@@ -11,6 +11,7 @@
 
 #define VERSION "V1.0"
 
+
 //define menu states (on main menu)
 #define STATE_MENU_INTRO         0 //show group logo
 #define STATE_TITLE_SCREEN       1 //play, sound on/off, music on/off SHDWWZRD in the corner
@@ -870,30 +871,31 @@ int16_t counter=0;
 uint32_t game_timer=0;
 
 void setup() {  
+  Serial.begin(115200);
   gb.begin();   
   gb.setFrameRate(30);
   gameState  = STATE_MENU_INTRO;
 }
 
-const char story_text_0_L1[] PROGMEM = "PLANET TURNAX";
-const char story_text_0_L2[] PROGMEM = "HAS EXTENSIVE";
-const char story_text_0_L3[] PROGMEM = "MINERAL DEPOSITS";
+const char PROGMEM story_text_0_L1[] = "PLANET TURNAX";
+const char PROGMEM story_text_0_L2[] = "HAS EXTENSIVE";
+const char PROGMEM story_text_0_L3[] = "MINERAL DEPOSITS";
 
-const char story_text_1_L1[] PROGMEM = "OF HIGH VALUE TO";
-const char story_text_1_L2[] PROGMEM = "(IPAC).";
-const char story_text_1_L3[] PROGMEM = "";
+const char PROGMEM story_text_1_L1[] = "OF HIGH VALUE TO";
+const char PROGMEM story_text_1_L2[] = "(IPAC).";
+const char PROGMEM story_text_1_L3[] = "";
 
-const char story_text_2_L1[] PROGMEM = "RECENT ATTACKS BY";
-const char story_text_2_L2[] PROGMEM = "PRIMATIVE SPECIES";
-const char story_text_2_L3[] PROGMEM = "HAVE PROVEN";
+const char PROGMEM story_text_2_L1[] = "RECENT ATTACKS BY";
+const char PROGMEM story_text_2_L2[] = "PRIMATIVE SPECIES";
+const char PROGMEM story_text_2_L3[] = "HAVE PROVEN";
 
-const char story_text_3_L1[] PROGMEM = "DAMAGING TO MINING";
-const char story_text_3_L2[] PROGMEM = "OPERATIONS.";
-const char story_text_3_L3[] PROGMEM = "";
+const char PROGMEM story_text_3_L1[] = "DAMAGING TO MINING";
+const char PROGMEM story_text_3_L2[] = "OPERATIONS.";
+const char PROGMEM story_text_3_L3[] = "";
 
-const char story_text_4_L1[] PROGMEM = "YOUR MISSION IS";
-const char story_text_4_L2[] PROGMEM = "TO ELIMINATE THE";
-const char story_text_4_L3[] PROGMEM = "PRIMITIVE SPECIES";
+const char PROGMEM story_text_4_L1[] = "YOUR MISSION IS";
+const char PROGMEM story_text_4_L2[] = "TO ELIMINATE THE";
+const char PROGMEM story_text_4_L3[] = "PRIMITIVE SPECIES";
 int section;
 int x;
 int y;
@@ -910,22 +912,22 @@ bool collide(Rect rect1, Rect rect2)
 int8_t title_track = -1;
 
 //credits
-const char credits0[] = "";
-const char credits1[] = "THANKS FOR PLAYING";
-const char credits2[] = "OMEGA HORIZON";
-const char credits3[] = "DESIGN";
-const char credits4[] = "KURONOWACHAN";
-const char credits5[] = "CODE";
-const char credits6[] = "SHDWWZRD";
-const char credits7[] = "ART";
-const char credits8[] = "STUDIOCRAFT";
-const char credits9[] = "TESTERS";
-const char credits10[] = "CRIS";
-const char credits11[] = "MORE GAMES AT";
-const char credits12[] = "NEORETRO.GAMES";
-const char credits13[] = "PLEASE SUPPORT US";
-const char credits14[] = "PATREON.COM/NEORETRO";
-const char* credits[] = {
+const char PROGMEM credits0[] = "";
+const char PROGMEM credits1[] = "THANKS FOR PLAYING";
+const char PROGMEM credits2[] = "OMEGA HORIZON";
+const char PROGMEM credits3[] = "DESIGN";
+const char PROGMEM credits4[] = "KURONOWACHAN";
+const char PROGMEM credits5[] = "CODE";
+const char PROGMEM credits6[] = "SHDWWZRD";
+const char PROGMEM credits7[] = "ART";
+const char PROGMEM credits8[] = "STUDIOCRAFT";
+const char PROGMEM credits9[] = "TESTERS";
+const char PROGMEM credits10[] = "CRIS";
+const char PROGMEM credits11[] = "MORE GAMES AT";
+const char PROGMEM credits12[] = "NEORETRO.GAMES";
+const char PROGMEM credits13[] = "PLEASE SUPPORT US";
+const char PROGMEM credits14[] = "PATREON.COM/NEORETRO";
+const char PROGMEM *credits[] = {
   credits1,
   credits2,
   credits0,
@@ -1316,6 +1318,7 @@ void playerTick(){
     }
     if(player.FIRE==1){
       //gb.sound.play("sfx_wpn_laser2.wav");
+      gb.sound.tone(200,30);
       player.cooldown=10;
       int16_t newX=0;int16_t newY=0;
       if(!player.FACELEFT){
@@ -1473,19 +1476,26 @@ void isEntityCollision(){
           entities[i].Exists=false;
           bitWrite(UNIQUES,5,0);
           player.POWERSUIT=true;
-        }else if(entities[i].Type==20){//koomer            
+        }else if(entities[i].Type==20){//koomer  
+          gb.sound.tone(200,50);           
           takeDamage(2);
         }else if(entities[i].Type==21){//herab
+          gb.sound.tone(200,50);   
           takeDamage(3);
         }else if(entities[i].Type==22){//grejen
+          gb.sound.tone(200,50);   
           takeDamage(4);
         }else if(entities[i].Type==23){//krynder
+          gb.sound.tone(200,50);   
           takeDamage(5);
         }else if(entities[i].Type==24){//koomer king
+          gb.sound.tone(200,50);   
           takeDamage(8);
         }else if(entities[i].Type==25){//karame
+          gb.sound.tone(200,50);   
           takeDamage(0);
         }else if(entities[i].Type==26){//karame energy blast
+          gb.sound.tone(200,50);   
           takeDamage(5);
         }            
       }
@@ -1505,11 +1515,6 @@ void drawPlayer(){
   }
   //player.FLASH=false;
 }
-
-
-
-
-
 
 
 
@@ -1766,8 +1771,9 @@ void entityTakeDamage(int8_t i, int8_t damage){
       createEntity(27,entities[i].point.x,entities[i].point.y,0);//death animation
     }
   }else{    
+    gb.sound.tone(200,50);   
     //gb.sound.play("sfx_damage_hit2.wav");
-    gb.sound.playCancel();
+    //gb.sound.playCancel();
   }
 }
 
