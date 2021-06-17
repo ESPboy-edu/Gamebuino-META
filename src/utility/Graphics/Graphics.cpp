@@ -33,7 +33,6 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "Graphics.h"
 #include "Image.h"
-#include "../Misc.h"
 
 // default 3x5 font table
 extern const uint8_t font3x5[];
@@ -1192,8 +1191,11 @@ void Graphics::setColor(uint8_t c, uint8_t bg) {
 }
 
 void Graphics::setColor(uint8_t r, uint8_t g, uint8_t b) {
-	setColor((Color)rgb888Torgb565({r, g, b}));
+    uint16_t clr = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+	setColor((Color)clr);
 }
+
+
 
 void Graphics::setTransparentColor(Color c) {
 	if (colorMode == ColorMode::index) {
@@ -1456,29 +1458,12 @@ void Graphics::getTextBounds(const char *str,
 
 // Return the size of the display
 int16_t Graphics::width(void) const {
-	if ((gbptr && gbptr->inited) || _width) {
-		// we are inited
 		return _width;
-	}
-	// we aren't inited, so let's try our best guess
-#if DISPLAY_MODE == DISPLAY_MODE_INDEX
-	return 160;
-#else
-	return 80;
-#endif
 }
+	
 
 int16_t Graphics::height(void) const {
-	if ((gbptr && gbptr->inited) || _height) {
-		// we are inited
 		return _height;
-	}
-	// we aren't inited, so let's try our best guess
-#if DISPLAY_MODE == DISPLAY_MODE_INDEX
-	return 128;
-#else
-	return 64;
-#endif
 }
 
 void Graphics::invertDisplay(bool i) {

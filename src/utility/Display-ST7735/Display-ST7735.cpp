@@ -35,9 +35,8 @@ inline uint16_t swapcolor(uint16_t x) {
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
 // Display_ST7735::Display_ST7735(int8_t cs, int8_t rs)  : Graphics(ST7735_TFTHEIGHT_18, ST7735_TFTWIDTH) {
 Display_ST7735::Display_ST7735(int8_t cs, int8_t rs)  : Graphics(128, 128) {
-// Display_ST7735::Display_ST7735(int8_t cs, int8_t rs)  : Graphics(80, 64) {
-	// we use the pinmask vars as we don't need cs / rs after we have the pinmask
 }
+
 
 // Initialization for ST7735R screens (green or red tabs)
 void Display_ST7735::init() {

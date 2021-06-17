@@ -2,20 +2,6 @@
 This file is part of the Gamebuino-Meta library,
 Copyright (c) Aadalie 2016-2017
 
-This is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License (LGPL)
-as published by the Free Software Foundation, either version 3 of
-the License, or (at your option) any later version.
-
-This is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License (LGPL) for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License (LGPL) along with the library.
-If not, see <http://www.gnu.org/licenses/>.
-
 Authors:
  - Aurelien Rodot
  - Sorunome
@@ -85,14 +71,7 @@ public:
 	Image(const uint8_t* buffer);
 	void init(const uint8_t* buffer);
 
-	// SD constructors
-	Image(char* filename, uint8_t fl = DEFAULT_FRAME_LOOP);
-	void init(char* filename, uint8_t fl = DEFAULT_FRAME_LOOP);
-	Image(uint16_t w, uint16_t h, char* filename, uint8_t fl = DEFAULT_FRAME_LOOP);
-	void init(uint16_t w, uint16_t h, char* filename, uint8_t fl = DEFAULT_FRAME_LOOP);
-	
 	void drawFastHLine(int16_t x, int16_t y, int16_t w) override __attribute__((optimize("-O3")));
-
 	
 	void nextFrame();
 	void setFrame(uint16_t frame);
@@ -105,10 +84,6 @@ public:
 	Color getPixelColor(int16_t x, int16_t y);
 	ColorIndex getPixelIndex(int16_t x, int16_t y);
 	
-	bool startRecording(char* filename);
-	void stopRecording(bool output = false);
-	bool save(char* filename);
-
 	uint16_t getBufferSize();
 	
 	void drawChar(int16_t x, int16_t y, unsigned char c, uint8_t size);

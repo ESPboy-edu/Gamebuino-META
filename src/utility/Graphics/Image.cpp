@@ -2,27 +2,12 @@
 This file is part of the Gamebuino-Meta library,
 Copyright (c) Aadalie 2016-2017
 
-This is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License (LGPL)
-as published by the Free Software Foundation, either version 3 of
-the License, or (at your option) any later version.
-
-This is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License (LGPL) for more details.
-
-You should have received a copy of the GNU Lesser General Public
-License (LGPL) along with the library.
-If not, see <http://www.gnu.org/licenses/>.
-
 Authors:
  - Aurelien Rodot
  - Sorunome
 */
 
 #include "Image.h"
-#include "../Graphics-SD.h"
 #include "../../Gamebuino-Meta.h"
 
 #ifndef max
@@ -268,121 +253,6 @@ void Image::init(const uint8_t* buffer) {
 	setFrame(0);
 }
 
-/*
-void Image::init(const uint8_t* buffer) {
-	if (isObjectCopy) {
-		return;
-	}
-	if (frame_handler) {
-		delete frame_handler;
-	}
-	//if (bufferSize && _buffer && (uint32_t)_buffer >= RAM_BOUNDARY) {
-	//	gb_free(_buffer);
-	//}
-	
-	uint8_t* buf = (uint8_t*)buffer;
-	_width = pgm_read_byte(buf++);
-	_height = pgm_read_byte(buf++);
-	frames = pgm_read_byte(buf++);
-	frames += (pgm_read_byte(buf++)) << 8;
-	frame_looping = pgm_read_byte(buf++);
-	transparentColor = pgm_read_byte(buf++);
-	colorMode = (ColorMode)(pgm_read_byte(buf++));
-	if (colorMode == ColorMode::index) {
-		if (transparentColor > 0x0F) {
-			useTransparentIndex = false;
-		} else {
-			uint8_t c = transparentColor;
-			transparentColorIndex = c;
-			useTransparentIndex = true;
-		}
-	}
-	
-	_buffer = (uint16_t*)buf;
-	frame_handler = new Frame_Handler_Mem(this);
-	frame_loopcounter = 0;
-	last_frame = (gbptr->frameCount & 0xFF) - 1;
-	setFrame(0);
-}
-*/
-/*
-void Image::init(const uint16_t* buffer) {
-	if (isObjectCopy) {
-		return;
-	}
-	if (frame_handler) {
-		delete frame_handler;
-	}
-	//if (bufferSize && _buffer && (uint32_t)_buffer >= RAM_BOUNDARY) {
-	//	gb_free(_buffer);
-	//}
-	
-	uint8_t* buf = (uint8_t*)buffer;
-	_width = pgm_read_byte(buf++);
-	_height = pgm_read_byte(buf++);
-	frames = pgm_read_byte(buf++);
-	frames += (pgm_read_byte(buf++)) << 8;
-	frame_looping = pgm_read_byte(buf++);
-	transparentColor = pgm_read_byte(buf++);
-	colorMode = (ColorMode)(pgm_read_byte(buf++));
-	if (colorMode == ColorMode::index) {
-		if (transparentColor > 0x0F) {
-			useTransparentIndex = false;
-		} else {
-			uint8_t c = transparentColor;
-			transparentColorIndex = c;
-			useTransparentIndex = true;
-		}
-	}
-	
-	_buffer = (uint16_t*)buf;
-	frame_handler = new Frame_Handler_Mem(this);
-	frame_loopcounter = 0;
-	last_frame = (gbptr->frameCount & 0xFF) - 1;
-	setFrame(0);
-}
-*/
-
-
-
-// SD constructors
-Image::Image(char* filename, uint8_t fl) : Graphics(0, 0) {
-	freshStart();
-	init(filename, fl);
-}
-void Image::init(char* filename, uint8_t fl) {
-	init(0, 0, filename, fl);
-}
-
-Image::Image(uint16_t w, uint16_t h, char* filename, uint8_t fl) : Graphics(w, h) {
-	freshStart();
-	init(w, h, filename, fl);
-}
-void Image::init(uint16_t w, uint16_t h, char* filename, uint8_t fl) {
-	if (isObjectCopy) {
-		return;
-	}
-	if (frame_handler) {
-		delete frame_handler;
-	} else {
-		bufferSize = 0;
-		_buffer = 0;
-	}
-	transparentColor = 0;
-	_width = w;
-	_height = h;
-	frame_looping = fl;
-	frame = 0;
-	frame_handler = new Frame_Handler_SD(this);
-	// for the SD handler we do NOT set frame to zero
-	// unlike the other handlers the SD handler must be lazy-inited
-	// and calling setFrame(0) here would trigger the lazy init already
-	//setFrame(0);
-	((Frame_Handler_SD*)frame_handler)->init(filename);
-	frame_loopcounter = 0;
-	last_frame = (gbptr->frameCount & 0xFF) - 1;
-}
-
 
 Image::~Image() {
 	if (isObjectCopy) {
@@ -435,19 +305,7 @@ uint16_t Image::getBufferSize() {
 	return bytes;
 }
 
-bool Image::startRecording(char* filename) {
-	return !isObjectCopy && Graphics_SD::startRecording(this, filename);
-}
 
-void Image::stopRecording(bool output) {
-	if (!isObjectCopy) {
-		Graphics_SD::stopRecording(this, output);
-	}
-}
-
-bool Image::save(char* filename) {
-	return !isObjectCopy && Graphics_SD::save(this, filename);
-}
 
 void Image::allocateBuffer() {
 	if (!isObjectCopy) {
@@ -927,97 +785,6 @@ void Image::drawBitmap(int8_t x, int8_t y, const uint8_t *bitmap) {
 }
 
 
-
-/*
-void Image::drawBitmap(int8_t x, int8_t y, PGM_P bitmap) {
-	uint8_t w = pgm_read_byte (bitmap);
-	bitmap++;
-	uint8_t h = pgm_read_byte (bitmap);
-	bitmap++;
-	
-	if ((x >= _width) || (y >= _height) || (x + w <= 0) || (x + h <= 0)) {
-		return;
-	}
-	uint8_t bw = (w + 7) / 8;
-	uint8_t _x = x;
-	if (colorMode == ColorMode::index) {
-		uint8_t bw = (w + 7) / 8;
-		if (y < 0) {
-			h += y;
-			bitmap -= bw*y;
-			y = 0;
-		}
-		if (y + h > _height) {
-			h = _height - y;
-		}
-		uint8_t x1 = max(0, x);
-		uint8_t x2 = min(_width, x + w);
-		
-		bitmap += (x1 - x) / 8;
-		uint8_t first_bitmap_mask = 0x80 >> ((x1 - x) & 7);
-		uint16_t bufBytewidth = ((_width + 1) / 2);
-		uint8_t* buf = (uint8_t*)_buffer;
-		buf += bufBytewidth * y + x1 / 2;
-		bool screen_alt_initial = (x1 % 2) == 0;
-		
-		
-		uint8_t b1 = color.i;
-		uint8_t b2 = color.iu;
-		
-		for (uint8_t dy=0; dy<h; dy++, bitmap+=bw, buf+=bufBytewidth) {
-			const char* bitmap_ptr = bitmap;
-			uint8_t bitmap_mask = first_bitmap_mask;
-			uint8_t* screen_buf = buf;
-			uint8_t pixels =  pgm_read_byte (bitmap_ptr);
-			bitmap_ptr++;
-			bool screen_alt = screen_alt_initial;
-			for (uint8_t sx=x1; sx<x2; sx++) {
-				
-				if (screen_alt) {
-					if (pixels & bitmap_mask) {
-						*screen_buf = (*screen_buf & 0x0F) | b2;
-					}
-				} else {
-					if (pixels & bitmap_mask) {
-						*screen_buf = (*screen_buf & 0xF0) | b1;
-					}
-					screen_buf++;
-				}
-				screen_alt = !screen_alt;
-				
-				bitmap_mask >>= 1;
-				if (!bitmap_mask) {
-					bitmap_mask = 0x80;
-					pixels =  pgm_read_byte (bitmap_ptr);
-					bitmap_ptr++;
-				}
-			}
-		}
-	} else {
-		uint8_t dw = 8 - (w%8);
-		for (uint8_t j = 0; j < h; j++) {
-			x = _x;
-			for (uint8_t i = 0; i < bw;) {
-				uint8_t b =  pgm_read_byte (bitmap);
-				bitmap++;
-				i++;
-				for (uint8_t k = 0; k < 8; k++) {
-					if (i == bw && k == dw) {
-						x += (w%8);
-						break;
-					}
-					if (b&0x80) {
-						drawPixel(x, y);
-					}
-					b <<= 1;
-					x++;
-				}
-			}
-			y++;
-		}
-	}
-}
-*/
 
 void Image::drawBitmap(int8_t x, int8_t y, const uint8_t *bitmap,
 	uint8_t rotation, uint8_t flip) {

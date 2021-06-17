@@ -44,7 +44,7 @@ void Buttons::update() {
 	uint8_t readstate;
 	
 	readstate = ~(thismcp->readGPIOAB() & 255);
-
+    //gamebuino uses inverted logic! 0 - means pressed and 1 - means unpressed
 	if (readstate&PAD_LEFT) 	bitClear(butstate, (uint8_t)BUTTON_LEFT);
 	if (readstate&PAD_RIGHT) 	bitClear(butstate, (uint8_t)BUTTON_RIGHT);
 	if (readstate&PAD_UP) 		bitClear(butstate, (uint8_t)BUTTON_UP);

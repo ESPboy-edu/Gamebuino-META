@@ -49,7 +49,7 @@
 ///////////////
 
 #ifndef SAVEBLOCK_NUM
-#define SAVEBLOCK_NUM 64
+#define SAVEBLOCK_NUM 256
 #endif
 
 #ifndef SAVEFILE_NAME
@@ -72,9 +72,9 @@
 // display defines
 ///////////////
 
-#ifndef DISPLAY_MODE
-#define DISPLAY_MODE DISPLAY_MODE_RGB565
-#endif
+//#ifndef DISPLAY_MODE
+//#define DISPLAY_MODE DISPLAY_MODE_RGB565
+//#endif
 
 #ifndef DISPLAY_DEFAULT_BACKGROUND_COLOR
 #define DISPLAY_DEFAULT_BACKGROUND_COLOR Color::black

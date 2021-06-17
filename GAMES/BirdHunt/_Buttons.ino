@@ -5,6 +5,7 @@ void button_check(int typeCheck){
      //####################################
      case GAMEMAKERS:
       if(gb.buttons.pressed(BUTTON_A)){
+        gb.sound.playOK();
         game.globalTimer = 0;
         game.gameStatus=TITLESCREEN;
       }
@@ -15,6 +16,7 @@ void button_check(int typeCheck){
      //####################################
      case TITLESCREEN:      
       if(gb.buttons.pressed(BUTTON_A)){
+        gb.sound.playOK();
         game.globalTimer = 0;
         game.gameStatus=MENU;
       }
@@ -25,6 +27,7 @@ void button_check(int typeCheck){
      //#######################################
      case MENU:      
       if(gb.buttons.pressed(BUTTON_A)){
+        gb.sound.playOK();
         switch(game.menuOption){
           case 0:
           break;
@@ -49,12 +52,14 @@ void button_check(int typeCheck){
         }
       }
 
-      if(gb.buttons.pressed(BUTTON_UP)){    
+      if(gb.buttons.pressed(BUTTON_UP)){ 
+        gb.sound.playTick();   
         game.menuOption = game.menuOption - 1;
         if(game.menuOption<=0){game.menuOption=4;}
       }
 
-      if(gb.buttons.pressed(BUTTON_DOWN)){    
+      if(gb.buttons.pressed(BUTTON_DOWN)){
+         gb.sound.playTick();    
         game.menuOption = game.menuOption + 1;
         if(game.menuOption>=5){game.menuOption=1;}
       }
@@ -67,6 +72,7 @@ void button_check(int typeCheck){
      //difficulty
       if(game.menuOption==1){
         if(gb.buttons.pressed(BUTTON_LEFT)){
+          gb.sound.playTick();
           player.difficulty = player.difficulty - 1;
           if(player.difficulty<=0){player.difficulty=1;}
           if(player.difficulty==1){player.usedBullet=0;}
@@ -76,6 +82,7 @@ void button_check(int typeCheck){
         }
         
         if(gb.buttons.pressed(BUTTON_RIGHT)){
+          gb.sound.playTick();
           player.difficulty = player.difficulty + 1;
           if(player.difficulty>=5){player.difficulty=4;}
           if(player.difficulty==1){player.usedBullet=0;}
@@ -87,11 +94,13 @@ void button_check(int typeCheck){
       //sensitivity
       if(game.menuOption==2){
         if(gb.buttons.pressed(BUTTON_LEFT)){
+          gb.sound.playTick();
           player.cursorSlowSensi=player.cursorSlowSensi-1;
           if(player.cursorSlowSensi<1){player.cursorSlowSensi=1;}
         }
         
         if(gb.buttons.pressed(BUTTON_RIGHT)){
+          gb.sound.playTick();
           player.cursorSlowSensi=player.cursorSlowSensi+1;
           if(player.cursorSlowSensi>3){player.cursorSlowSensi=3;}
         }
@@ -102,20 +111,24 @@ void button_check(int typeCheck){
       //back
       if(game.menuOption==3){
         if(gb.buttons.pressed(BUTTON_A)){
+          gb.sound.playOK();
           game.menuOption=2;
           game.gameStatus=MENU;
         }
       }
 
-      if(gb.buttons.pressed(BUTTON_UP)){    
+      if(gb.buttons.pressed(BUTTON_UP)){
+        gb.sound.playTick();    
         game.menuOption = game.menuOption - 1;
         if(game.menuOption<=0){game.menuOption=3;}
       }
-      if(gb.buttons.pressed(BUTTON_DOWN)){    
+      if(gb.buttons.pressed(BUTTON_DOWN)){ 
+        gb.sound.playTick();   
         game.menuOption = game.menuOption + 1;
         if(game.menuOption>=4){game.menuOption=1;}
       }  
       if(gb.buttons.pressed(BUTTON_B)){
+        gb.sound.playCancel();
         game.menuOption=2;
         game.gameStatus=MENU;
       }      
@@ -128,6 +141,7 @@ void button_check(int typeCheck){
       //Continue
       if(game.menuOption==1){
         if(gb.buttons.pressed(BUTTON_A)){
+          gb.sound.playOK();
           game.menuOption=1;
           game.gameStatus=previousStatus;      
         }
@@ -135,21 +149,25 @@ void button_check(int typeCheck){
       //Give Up
       if(game.menuOption==2){
         if(gb.buttons.pressed(BUTTON_A)){
+          gb.sound.playOK();
           game.menuOption=1;
           game_reset();
           game.gameStatus=MENU;
         }
       }
 
-      if(gb.buttons.pressed(BUTTON_UP)){    
+      if(gb.buttons.pressed(BUTTON_UP)){  
+        gb.sound.playTick();  
         game.menuOption = game.menuOption - 1;
         if(game.menuOption<=0){game.menuOption=2;}
       }
       if(gb.buttons.pressed(BUTTON_DOWN)){    
+        gb.sound.playTick();
         game.menuOption = game.menuOption + 1;
         if(game.menuOption>=3){game.menuOption=1;}
       }  
       if(gb.buttons.pressed(BUTTON_MENU) or gb.buttons.pressed(BUTTON_B)){
+        gb.sound.playCancel();
         game.menuOption=1;
         game.gameStatus=previousStatus;
       }      
@@ -160,6 +178,7 @@ void button_check(int typeCheck){
      //####################################
      case CONTROLS:      
       if(gb.buttons.pressed(BUTTON_B)){
+        gb.sound.playCancel();
         game.gameStatus=MENU;
       }
      break; 
@@ -169,6 +188,7 @@ void button_check(int typeCheck){
      //####################################
      case CREDITS:      
       if(gb.buttons.pressed(BUTTON_B)){
+        gb.sound.playCancel();
         game.gameStatus=MENU;
       }
      break;
@@ -179,6 +199,7 @@ void button_check(int typeCheck){
      case GAMEOVER: 
       if(game.globalTimer>=10){
         if(gb.buttons.pressed(BUTTON_A) or gb.buttons.pressed(BUTTON_B)){
+          gb.sound.playOK();
           game.gameStatus=MENU;
         }
       }
@@ -220,6 +241,7 @@ void button_check(int typeCheck){
       }
       
       if(gb.buttons.pressed(BUTTON_MENU)){    
+        gb.sound.playCancel();
         game.menuOption=1;
         previousStatus = GAME;
         game.gameStatus=PAUSE;
@@ -228,7 +250,8 @@ void button_check(int typeCheck){
 
      //####################################  
      case ANIMFAIL:
-      if(gb.buttons.pressed(BUTTON_MENU)){    
+      if(gb.buttons.pressed(BUTTON_MENU)){
+        gb.sound.playCancel();    
         game.menuOption=1;
         previousStatus = ANIMFAIL;
         game.gameStatus=PAUSE;
@@ -238,6 +261,7 @@ void button_check(int typeCheck){
      //####################################  
      case ANIMSUCCESS:
       if(gb.buttons.pressed(BUTTON_MENU)){    
+        gb.sound.playCancel();
         game.menuOption=1;
         previousStatus = ANIMSUCCESS;
         game.gameStatus=PAUSE;
@@ -247,6 +271,7 @@ void button_check(int typeCheck){
      //####################################  
      case ANIM:
       if(gb.buttons.pressed(BUTTON_MENU)){    
+        gb.sound.playCancel();
         game.menuOption=1;
         previousStatus = ANIM;
         game.gameStatus=PAUSE;
