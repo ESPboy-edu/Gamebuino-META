@@ -46,6 +46,7 @@ Gamebuino::Gamebuino(){
 
 void Gamebuino::begin() {
   WiFi.mode(WIFI_OFF); 
+  Serial.begin(115200);
   myLED.setRGB(0,0,0);
   drawXBitmap(tft, 30,24, g_espboy, 68, 64);
   for(uint8_t i=0; i<200; i++) {dac.setVoltage(i*10, false); delay(10);}
@@ -55,6 +56,8 @@ void Gamebuino::begin() {
   myLED.setRGB(0,5,0); delay(200);
   myLED.setRGB(0,0,5); delay(200);
   myLED.setRGB(0,0,0);
+  
+  save.begin();
   
   display.fill(Color::black);
   display.fontSize = SYSTEM_DEFAULT_FONT_SIZE;

@@ -17,7 +17,7 @@ Authors:
 //#define DISPLAY_MODE DISPLAY_MODE_RGB565
 //#define DISPLAY_MODE DISPLAY_MODE_INDEX
 //#define DISPLAY_MODE DISPLAY_MODE_INDEX_HALFRES
-//#define DISPLAY_MODE DISPLAY_MODE_INDEX_128x128
+#define DISPLAY_MODE DISPLAY_MODE_INDEX_128x128
 
 
 
@@ -40,7 +40,6 @@ Authors:
 #include <Adafruit_MCP23017.h> 
 #include <Adafruit_MCP4725.h>
 #include <ESP8266WiFi.h> 
-#include <ESP_EEPROM.h>
 
 
 #define MCP23017address 0 

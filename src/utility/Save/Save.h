@@ -10,13 +10,13 @@ Authors:
 #define _GAMEBUINO_META_SAVE_H_
 
 #include "../../config/config.h"
-
+#include <ESP_EEPROM.h>
 
 namespace Gamebuino_Meta {
 
 class Save {
 public:
-	Save();
+	void begin();
 	void config();
 	int32_t get(uint16_t i);
 	bool set(uint16_t i, int32_t num);
