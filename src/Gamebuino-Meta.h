@@ -14,7 +14,7 @@ Authors:
 //!!!!!!!!!!!!!
 //UNCOMMENT DEFAULT DISPLAY MODE or #DEFINE in your sketch before #include <Gamebuino-Meta.h>! one of the following:
 
-//#define DISPLAY_MODE DISPLAY_MODE_RGB565
+#define DISPLAY_MODE DISPLAY_MODE_RGB565
 //#define DISPLAY_MODE DISPLAY_MODE_INDEX
 //#define DISPLAY_MODE DISPLAY_MODE_INDEX_HALFRES
 //#define DISPLAY_MODE DISPLAY_MODE_INDEX_128x128
@@ -34,6 +34,7 @@ Authors:
 #include "utility/Image.h"
 #include "utility/Language.h"
 #include "utility/Save.h"
+#include "utility/Lights.h"
 
 #include "utility/ESPboyLED.h"
 #include "utility/ESPboyLogo.h"
@@ -59,12 +60,12 @@ public:
 	Image display = DISPLAY_CONSTRUCTOR;
 	Sound sound;
 	Display_ST7735 tft = Display_ST7735(-1, 16);
-	Image lights = Image(2, 4, ColorMode::rgb565);
+	ESPboyLED myLED;
+	Lights lights = Lights(&myLED);
 	Save save;
 	Language language;
 	Gui gui;
 	Collide collide;
-	ESPboyLED myLED;
     
     Gamebuino();
     
@@ -83,6 +84,7 @@ public:
 	void updateDisplay();
 	void setFrameRate(uint8_t fps);
 	void pickRandomSeed();
+	uint16_t createColor(uint8_t r, uint8_t g, uint8_t b);
 	
 	void setScreenRotation(Rotation r);
 	Rotation getScreenRotation();

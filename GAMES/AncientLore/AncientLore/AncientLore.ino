@@ -161,8 +161,7 @@ void setup() {
 void loop() {
   while(!gb.update())
   gb.display.clear();
-  //gb.lights.clear();
-  gb.myLED.setRGB(0,0,0);
+  gb.lights.clear();
   if(mainMenu==true)
   {
     menuScreen();
@@ -502,9 +501,8 @@ void game()
     if(DisplayPlan[7]>0 && Lore>0)
     {
       //gb.sound.fx(magicSfx);
-      //gb.lights.fill(BLUE);
+      gb.lights.fill(BLUE);
       magicSfx();
-      gb.myLED.setRGB(0,0,5);
       if(DisplayPlan[7]<4)
       {
         DisplayPlan[7]=0;
@@ -688,9 +686,8 @@ void checkCollider(uint8_t displayPlan[114],String moveDirection) //we check if 
   if(displayPlan[SelectedField]==33)//collision with the cup
   {
     //gb.sound.fx(cupSfx);
-    //gb.lights.fill(RED);
+    gb.lights.fill(RED);
     cupSfx();
-    gb.myLED.setRGB(5,0,0);
     displayPlan[SelectedField]=0; //clear cup base
     displayPlan[SelectedField-10]=0; //clear cup up
     PlayerHP+=11;
@@ -703,9 +700,8 @@ void checkCollider(uint8_t displayPlan[114],String moveDirection) //we check if 
   else if(displayPlan[SelectedField]==31) //collision with the diamond
   {
     //gb.sound.fx(diamondSfx);
-    //gb.lights.fill(YELLOW);
+    gb.lights.fill(YELLOW);
     diamondSfx();
-    gb.myLED.setRGB(5,5,0);
     displayPlan[SelectedField]=0; //clear diamond base
     displayPlan[SelectedField-10]=0; //clear diamond up
     Score+=10;
@@ -715,9 +711,8 @@ void checkCollider(uint8_t displayPlan[114],String moveDirection) //we check if 
   else if(displayPlan[SelectedField]==35) //collision with the power
   {
     //gb.sound.fx(loreSfx);
-    //gb.lights.fill(BLUE);
+    gb.lights.fill(BLUE);
     loreSfx();
-    gb.myLED.setRGB(0,0,5);
     displayPlan[SelectedField]=0; //clear power base
     displayPlan[SelectedField-10]=0; //clear power up
     Lore+=2;
@@ -867,8 +862,7 @@ void enemyActions(uint8_t displayPlan[114])
     {
       if(enemyHit()==true)
       {
-        //gb.lights.fill(RED);
-        gb.myLED.setRGB(5,0,0);
+        gb.lights.fill(RED);
         PlayerHP--;
         if(PlayerHP<=0)
         {

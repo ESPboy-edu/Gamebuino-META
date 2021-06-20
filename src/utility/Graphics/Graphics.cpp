@@ -748,7 +748,8 @@ void Graphics::drawImage(int16_t x, int16_t y, Image& img, int16_t w2, int16_t h
 					bufferLine[i2] = (uint16_t)colorIndex[b & 0x0F];
 				}
 			}
-			drawBufferedLine(x + i2offset, y + j2 + j2offset, bufferLine, w2cropped, img);
+			//minus 1 added because it was a onscreen problem with 1 pixel row
+			drawBufferedLine(x + i2offset - 1, y + j2 + j2offset, bufferLine, w2cropped, img);
 		}
 		img.transparentColor = transparent_backup;
 		return;
@@ -779,7 +780,8 @@ void Graphics::drawImage(int16_t x, int16_t y, Image& img, int16_t w2, int16_t h
 					*dst = (*dst & 0x0F) | (b << 4);
 				}
 			}
-			drawBufferedLine(x + i2offset, y + j2 + j2offset, (uint16_t*)bufferLine, w2cropped, img);
+			//minus 1 added because it was a onscreen problem with 1 pixel row
+			drawBufferedLine(x + i2offset - 1, y + j2 + j2offset, (uint16_t*)bufferLine, w2cropped, img);
 		}
 		return;
 	}

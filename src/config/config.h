@@ -28,12 +28,11 @@
 #error "Define correct DISPLAY MODE of your skech in Arduino IDE ESPboy_GamebuinoMETA libraries folder: [..ESPboy_GamebuinoMETA/src/Gamebuino-Meta.h]"
 #endif
 
-#if DISPLAY_MODE == DISPLAY_MODE_INDEX
-#define SYSTEM_DEFAULT_FONT_SIZE 2
-#else
+//#if DISPLAY_MODE == DISPLAY_MODE_INDEX
+//#define SYSTEM_DEFAULT_FONT_SIZE 2
+//#else
 #define SYSTEM_DEFAULT_FONT_SIZE 1
-#endif
-
+//#endif
 
 #include <stdlib.h>
 #include <malloc.h>

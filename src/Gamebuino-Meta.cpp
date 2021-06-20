@@ -73,6 +73,17 @@ void Gamebuino::begin() {
 }
 
 
+uint16_t Gamebuino::createColor(uint8_t r, uint8_t g, uint8_t b) {
+    r = r >> 3;    
+    g = g >> 2;     
+    b = b >> 3;   
+	uint16_t rr = r & 0xF800;
+    uint16_t gg = g & 0x07E0;
+    uint16_t bb = b & 0x001F;
+    return (r | g | b);
+}
+
+
 void Gamebuino::drawXBitmap(Graphics& g, int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h){
   int32_t i, j, byteWidth = (w + 7) / 8;
   g.setColor(YELLOW);
