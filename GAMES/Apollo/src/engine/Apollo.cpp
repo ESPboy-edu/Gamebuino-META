@@ -1,3 +1,17 @@
+/**
+ * -------------------------------------------------------------------------
+ *                                  Apollo
+ * -------------------------------------------------------------------------
+ *         a tiny game for the Gamebuino META retro gaming handheld
+ *                    inspired by the famous Lunar Lander
+ *                       https://youtu.be/McAhSoAEbhM
+ *       https://en.wikipedia.org/wiki/Lunar_Lander_(1979_video_game)
+ * -------------------------------------------------------------------------
+ *                          © 2021 Steph @ m1cr0lab
+ *                       https://gamebuino.m1cr0lab.com
+ * -------------------------------------------------------------------------
+ */
+
 #include <Gamebuino-Meta.h>
 #include "Apollo.h"
 #include "../data/assets.h"
@@ -38,34 +52,45 @@ void Apollo::refuel() {
 void Apollo::power(float_t p) {
 
     float_t f = min(_fuel, p * APOLLO_FUEL_DECAY);
+
     _fuel -= f;
-    p = f / APOLLO_FUEL_DECAY;
-    _pow = p;
-    _acc = p * APOLLO_POWER;
+    p      = f / APOLLO_FUEL_DECAY;
+    _pow   = p;
+    _acc   = p * APOLLO_POWER;
 
 }
 
 void Apollo::rotate(int8_t a) {
 
-    if (a == 0) _vrot = 0;
-    else {
+    if (a == 0) {
+
+        _vrot = 0;
+
+    } else {
+
         int8_t  s = a < 0 ? -1 : 1;
         uint8_t f = min(_fuel, abs(a));
+
         _fuel -= f;
         _vrot = PI*s*f/180.f;
+
     };
 
 }
 
 void Apollo::propel(float_t vx, float_t vy, float_t rotation) {
+
     _vx  = vx;
     _vy  = vy;
     _rot = rotation;
+
 }
 
 void Apollo::land(float_t y) {
+
     _y  = y;
     _vx = _vy = _acc = _rot = _vrot = 0;
+
 }
 
 void Apollo::moveX(int16_t dx) {
@@ -106,6 +131,7 @@ void Apollo::draw(Camera& camera, bool with_flame) {
     uint8_t i, j;
     float_t ri, ti, rj, tj;
     float_t x1, y1, x2, y2;
+
     for (uint8_t a=0; a<APOLLO_ARCS_NB; a+=2) {
 
         i = APOLLO_ARCS[a] << 1;
@@ -175,6 +201,7 @@ void Apollo::draw(Camera& camera, bool with_flame) {
 void Apollo::loop() {
 
     _rot += _vrot;
+    
          if (_rot < 0)    _rot += 2*PI;
     else if (_rot > 2*PI) _rot -= 2*PI;
 

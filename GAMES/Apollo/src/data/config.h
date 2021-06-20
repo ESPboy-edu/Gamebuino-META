@@ -1,9 +1,25 @@
+/**
+ * -------------------------------------------------------------------------
+ *                                  Apollo
+ * -------------------------------------------------------------------------
+ *         a tiny game for the Gamebuino META retro gaming handheld
+ *                    inspired by the famous Lunar Lander
+ *                       https://youtu.be/McAhSoAEbhM
+ *       https://en.wikipedia.org/wiki/Lunar_Lander_(1979_video_game)
+ * -------------------------------------------------------------------------
+ *                          © 2021 Steph @ m1cr0lab
+ *                       https://gamebuino.m1cr0lab.com
+ * -------------------------------------------------------------------------
+ */
+
 #pragma once
 
 #include <Arduino.h>
 
-const uint8_t LEFT_POT_PIN  = A0;
-const uint8_t RIGHT_POT_PIN = A0;
+#define DEBUG 0
+
+//const uint8_t LEFT_POT_PIN  = A5;
+//const uint8_t RIGHT_POT_PIN = A4;
 
 const uint8_t SCREEN_WIDTH  = 128;
 const uint8_t SCREEN_HEIGHT = 128;

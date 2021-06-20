@@ -1,3 +1,17 @@
+/**
+ * -------------------------------------------------------------------------
+ *                                  Apollo
+ * -------------------------------------------------------------------------
+ *         a tiny game for the Gamebuino META retro gaming handheld
+ *                    inspired by the famous Lunar Lander
+ *                       https://youtu.be/McAhSoAEbhM
+ *       https://en.wikipedia.org/wiki/Lunar_Lander_(1979_video_game)
+ * -------------------------------------------------------------------------
+ *                          © 2021 Steph @ m1cr0lab
+ *                       https://gamebuino.m1cr0lab.com
+ * -------------------------------------------------------------------------
+ */
+
 #include <Gamebuino-Meta.h>
 #include "Scrap.h"
 #include "../data/assets.h"
@@ -17,8 +31,10 @@ void Scrap::init(float_t x, float_t y, float_t radius, float_t vx, float_t vy, f
     uint8_t n = VERTICE_NB << 1;
 
     for (uint8_t i=0; i<n; i+=2) {
+
         _vertice[i]   = radius * .1f * random(4, 11);
         _vertice[i+1] = i * 2*PI / VERTICE_NB;
+
     }
 
     _visible = true;
@@ -33,8 +49,8 @@ void Scrap::draw(Camera &camera) {
     float_t cy = camera.oy();
     float_t cz = camera.zoom();
 
-    float_t r  = _vertice[0];
-    float_t a  = _vertice[1] + _rot;
+    float_t r = _vertice[0];
+    float_t a = _vertice[1] + _rot;
 
     float_t x0 = _x + r*cos(a), x1 = x0;
     float_t y0 = _y + r*sin(a), y1 = y0;
@@ -78,7 +94,8 @@ void Scrap::loop() {
     if (!_visible) return;
 
     _rot += _vrot;
-        if (_rot < 0)    _rot += 2*PI;
+
+         if (_rot < 0)    _rot += 2*PI;
     else if (_rot > 2*PI) _rot -= 2*PI;
 
     _vy += GRAVITY;
