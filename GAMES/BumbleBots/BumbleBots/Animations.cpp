@@ -31,17 +31,20 @@ Animation* Animation::update() {
 //-----------------------------------------------------------------------------
 // DieAnimation implementation
 
+/*
 const Gamebuino_Meta::Sound_FX dieSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,80,7},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,89,7},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,-1,0,100,12},
 };
-
+*/
 Animation* DieAnimation::init(const char *cause) {
   _cause = cause;
   game.level().freeze();
-  gb.sound.fx(dieSfx);
-
+  //gb.sound.fx(dieSfx);
+  gb.sound.tone(100, 800);
+  delay(800);
+  
   return Animation::init();
 }
 
@@ -62,18 +65,26 @@ Animation* DieAnimation::update() {
 
 //-----------------------------------------------------------------------------
 // GameOverAnimation implementation
-
+/*
 const Gamebuino_Meta::Sound_FX gameOverSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,89,12},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,100,12},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,-2,0,113,20},
 };
+*/
 
 Animation* GameOverAnimation::init() {
   _hiScore = game.registerGameScore();
 
-  gb.sound.fx(gameOverSfx);
-
+  //gb.sound.fx(gameOverSfx);
+  gb.sound.tone(700,100);
+  delay(100);
+  gb.sound.tone(500,200);
+  delay(200);  
+  gb.sound.tone(300,300);
+  delay(300);
+  gb.sound.tone(100,800);
+  
   return Animation::init();
 }
 
@@ -100,6 +111,7 @@ void GameOverAnimation::draw() {
 // GameDoneAnimation declaration
 
 // Sounds as "End of the line"
+/*
 const Gamebuino_Meta::Sound_FX gameDoneSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,-1,0,50,8},
   {Gamebuino_Meta::Sound_FX_Wave::NOISE,1,0,0,0,0,4},
@@ -109,6 +121,7 @@ const Gamebuino_Meta::Sound_FX gameDoneSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::NOISE,1,0,0,0,0,4},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,-1,0,47,16},
 };
+*/
 
 /* Light color gradients.
  *
@@ -137,13 +150,19 @@ const uint16_t gradientColors[numGradientColors] = {
   0xf81f, 0xf81a, 0xf815, 0xf80f, 0xf80a, 0xf805,
 };
 
+/*
 const Gamebuino_Meta::Sound_FX liveScoreSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,-64,0,50,1},
 };
+*/
 
 Animation* GameDoneAnimation::init() {
-  gb.sound.fx(gameDoneSfx);
-
+  //gb.sound.fx(gameDoneSfx);
+  gb.sound.playCancel();
+  delay(150);
+  gb.sound.playCancel();
+  delay(150);
+  gb.sound.playOK();
   return Animation::init();
 }
 
@@ -200,7 +219,8 @@ void GameDoneAnimation::drawLights() {
 
 void GameDoneAnimation::draw() {
   if (clock() >= 50 && clock() < 120) {
-    gb.sound.fx(liveScoreSfx);
+    //gb.sound.fx(liveScoreSfx);
+    gb.sound.playOK();
     game.addToScore(1);
     gb.display.drawImage(10 + clock() - 50, 1, liveIconImage);
   }
@@ -212,7 +232,7 @@ void GameDoneAnimation::draw() {
 
 //-----------------------------------------------------------------------------
 // LevelDoneAnimation implementation
-
+/*
 const Gamebuino_Meta::Sound_FX levelDoneSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,89,8},
   {Gamebuino_Meta::Sound_FX_Wave::NOISE,1,0,0,0,0,4},
@@ -235,16 +255,24 @@ const Gamebuino_Meta::Sound_FX levelHiSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,0,0,0,50,1},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,-3,0,45,15},
 };
-
-const Gamebuino_Meta::Sound_FX* timeScoreSfx = liveScoreSfx;
+*/
+//const Gamebuino_Meta::Sound_FX* timeScoreSfx = liveScoreSfx;
 
 Animation* LevelDoneAnimation::init() {
   game.level().freeze();
 
   _levelHi = false;
 
-  gb.sound.fx(levelDoneSfx);
-
+  //gb.sound.fx(levelDoneSfx);
+  gb.sound.tone(200,100);
+  delay(150);
+  gb.sound.tone(200,100);
+  delay(150);
+  gb.sound.tone(200,100);
+  delay(150);
+  gb.sound.tone(500,400);
+  delay(400);
+    
   return Animation::init();
 }
 
@@ -254,14 +282,19 @@ Animation* LevelDoneAnimation::update() {
   if (clock() == 50) {
     if (game.level().hasTimeLeft()) {
       game.level().decreaseTimeLeft();
-      gb.sound.fx(timeScoreSfx);
+      //gb.sound.fx(timeScoreSfx);
+      gb.sound.playOK();
       game.addToScore(1);
       rewindClock();
     }
     else {
       _levelHi = game.registerLevelScore();
       if (_levelHi) {
-        gb.sound.fx(levelHiSfx);
+        //gb.sound.fx(levelHiSfx);
+          gb.sound.tone(200,100);
+          delay(150);
+          gb.sound.tone(500,400);
+          delay(400);
       }
     }
   }
@@ -280,14 +313,14 @@ void LevelDoneAnimation::draw() {
 
 //-----------------------------------------------------------------------------
 // LevelStartAnimation implementation
-
+/*
 const Gamebuino_Meta::Sound_FX getReadySfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,50,3},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,4,0,0,100,4},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,47,6},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,-2,0,50,7},
 };
-
+*/
 Animation* LevelStartAnimation::init() {
   game.level().reset();
 
@@ -298,8 +331,14 @@ Animation* LevelStartAnimation::update() {
   Animation::update();
 
   if (clock() == 60 || gb.buttons.held(BUTTON_A, 0)) {
-    gb.sound.fx(getReadySfx);
-
+    //gb.sound.fx(getReadySfx);
+    gb.sound.tone(200,100);
+    delay(100);
+    gb.sound.tone(500,100);
+    delay(100);
+    gb.sound.tone(800,300);
+    delay(100);    
+    
     game.level().start();
     return nullptr;
   }

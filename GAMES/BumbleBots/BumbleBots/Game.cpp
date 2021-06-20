@@ -71,23 +71,22 @@ Animation* Game::gameOver() {
 void Game::signalDeath(const char* cause) {
   _causeOfDeath = cause;
 }
-
+/*
 const Gamebuino_Meta::Sound_FX pickupCollectedSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,50,3},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,0,89,3},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,-1,0,63,3},
 };
 const Gamebuino_Meta::Sound_FX* boxDestroyedSfx = pickupCollectedSfx;
+*/
 
 void Game::signalPickupCollected() {
   _level.pickupCollected();
 
   addToScore(10);
-  tone(D3, 200, 50);
-  delay(50);
-  tone(D3, 400, 50);
-  gb.sound.fx(pickupCollectedSfx);
-
+  //gb.sound.fx(pickupCollectedSfx);
+  gb.sound.playOK();
+  
   if (_level.isCompleted()) {
     _activeAnimation = _levelDoneAnimation.init();
   }
@@ -96,13 +95,9 @@ void Game::signalPickupCollected() {
 void Game::signalBoxDestroyed(Box& box) {
   if (box.mustBeDestroyed()) {
     addToScore(10);
-    gb.sound.fx(boxDestroyedSfx);
-    tone(D3, 150, 25);
-    delay(30);
-    tone(D3, 100, 25);
-    delay(30);
-    tone(D3, 50, 25);
-    
+    //gb.sound.fx(boxDestroyedSfx);
+    gb.sound.playCancel();
+  
     _level.boxDestroyed();
 
     if (_level.isCompleted()) {

@@ -12,10 +12,10 @@ const Color DGRAY = DARKGRAY;
 const Color DBLUE = DARKBLUE;
 
 // Blend of BLUE and DBLUE
-const Color CUST1 = gb.createColor(34, 103, 171);
+const Color CUST1 = (Color)gb.createColor(34, 103, 171);
 
 // Blend of ORANGE and BROWN
-const Color CUST2 = gb.createColor(145, 110, 67);
+const Color CUST2 = (Color)gb.createColor(145, 110, 67);
 
 const Color palettes[numPalettes][16] = {
   // Default

@@ -50,13 +50,13 @@ void Teleport::init(int8_t objectIndex, int8_t destTileIndex, uint8_t paletteInd
 void Teleport::reset() {
   _coolDownCount = 0;
 }
-
+/*
 const Gamebuino_Meta::Sound_FX teleportSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,128,0,50,38,3},
   {Gamebuino_Meta::Sound_FX_Wave::NOISE,1,0,0,0,0,6},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,128,0,50,38,3},
 };
-
+*/
 void Teleport::visit(int8_t moverIndex) {
   Mover* mover = movers[moverIndex];
   if (mover->isMoving()) {
@@ -72,12 +72,12 @@ void Teleport::visit(int8_t moverIndex) {
     mover->setHeight(destTile.height() + 16);
 
     _coolDownCount = 24;
-    gb.sound.fx(teleportSfx);
-    tone(D3, 200, 50);
-    delay(50);
-    tone(D3, 400, 50);
-    delay(50);
-    tone(D3, 600, 50);
+    //gb.sound.fx(teleportSfx);
+    gb.sound.playOK();
+    delay(200);
+    gb.sound.playOK();
+    delay(200);
+    gb.sound.playOK();    
   }
 }
 
@@ -108,12 +108,12 @@ void Gap::reset() {
 
   _state = GapState::Empty;
 }
-
+/*
 const Gamebuino_Meta::Sound_FX dropSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,80,0,24,142,40},
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,160,-20,127,179,4},
 };
-
+*/
 void Gap::visit(int8_t moverIndex) {
   if (
     _state == GapState::Empty &&
@@ -124,10 +124,8 @@ void Gap::visit(int8_t moverIndex) {
     movers[moverIndex]->startDrop();
     movers[moverIndex]->freeze();
 
-    gb.sound.fx(dropSfx);
-    tone(D3, 300, 50);
-    delay(50);
-    tone(D3, 100, 50);
+    //gb.sound.fx(dropSfx);
+    gb.sound.playCancel();
   }
 }
 

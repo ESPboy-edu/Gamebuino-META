@@ -15,7 +15,7 @@
 // Exposed in Globals.h
 uint8_t numMovers = 0;
 Mover* movers[maxNumMovers];
-
+/*
 const Gamebuino_Meta::Sound_FX bumpSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,133,-10,0,150,10},
 };
@@ -28,6 +28,7 @@ const Gamebuino_Meta::Sound_FX crushSfx[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,150,0,127,142,1},
   {Gamebuino_Meta::Sound_FX_Wave::NOISE,0,48,64,0,256,2},
 };
+*/
 
 bool isFall(int8_t fromTileIndex, int8_t destTileIndex) {
   return (
@@ -300,7 +301,7 @@ void Mover::update() {
       if (destroyableIndex != -1) {
         movers[destroyableIndex]->destroy();
 
-        gb.sound.fx(crushSfx);
+        //gb.sound.fx(crushSfx);
         for(uint8_t i=0; i<10; i++){
           gb.sound.tone(random(30)+50, random(30)+50);
           delay(random(30)+30);
@@ -447,8 +448,8 @@ void Player::swapTiles() {
 
   if (!isFxPlaying()) {
     // Do not let ambient move sound cut off a more important sound effect
-    gb.sound.fx(moveSfx);
-    tone(D3, 50, 10);
+    //gb.sound.fx(moveSfx);
+    gb.sound.playTick();
   }
 }
 
@@ -471,10 +472,8 @@ void Player::updateHeight() {
 
 void Player::bump() {
   Bot::bump();
-  gb.sound.fx(bumpSfx);
-  tone(D3, 100, 50);
-  delay(50);
-  tone(D3, 500, 50);
+  //gb.sound.fx(bumpSfx);
+  gb.sound.playCancel();
 }
 
 void Player::update() {
