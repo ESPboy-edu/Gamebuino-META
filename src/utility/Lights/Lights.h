@@ -19,7 +19,8 @@ public:
   Lights (ESPboyLED *localLED);
   void clear();
   void fill(Gamebuino_Meta::Color clrSet);
-  
+  void drawPixel(uint8_t x, uint8_t y, Gamebuino_Meta::Color clrSet);
+  void drawPixel(uint8_t x, uint8_t y, const Gamebuino_Meta::ColorIndex clrSet);
 };  
 
 #endif

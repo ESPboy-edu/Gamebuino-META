@@ -22,3 +22,13 @@ void Lights::fill(Gamebuino_Meta::Color clrSet){
   uint8_t b = ((uint16_t)clrSet << 3) & 0xF8; b |= (b >> 5); b>>=2;
   LEDld -> setRGB (r,g,b);
 };
+
+
+void Lights::drawPixel(uint8_t x, uint8_t y, Gamebuino_Meta::Color clrSet){
+  this->fill (clrSet);
+}
+
+
+void Lights::drawPixel(uint8_t x, uint8_t y, const Gamebuino_Meta::ColorIndex clrSet){
+  this->fill ((Gamebuino_Meta::Color) clrSet);
+}
