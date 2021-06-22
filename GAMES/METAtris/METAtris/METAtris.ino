@@ -19,9 +19,9 @@ Save block 0 to 4 is for top 5 high scores
 #define playFieldStartX 2
 #define playFieldStartY 2
 
-#define dropSoundPitch 200
-#define moveSoundPitch 1000
-#define rotateSoundPitch 500
+#define dropSoundPitch 100
+#define moveSoundPitch 500
+#define rotateSoundPitch 300
 
 extern const byte font5x7[];
 extern const byte font3x5[];

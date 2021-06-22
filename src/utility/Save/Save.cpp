@@ -30,14 +30,25 @@ void Save::config(){};
 
 
 int32_t Save::get(uint16_t i) {
- uint32_t num;
+  uint32_t num;
   EEPROM.get((i*4)+2, num);
   return (num);
 };
 
+void Save::get(uint16_t i, char *num) {
+  for(uint8_t j=0; j<strlen(num)+1; j++)
+    EEPROM.get((i*(sizeof(num)+1))+2+j, num[j]);  
+}
 
 bool Save::set(uint16_t i, int32_t num) {
   EEPROM.put((i*4)+2, num);
+  EEPROM.commit();
+  return true;
+};
+
+bool Save::set(uint16_t i, char* num) {
+  for(uint8_t j=0; j<strlen(num)+1; j++) 
+    EEPROM.put((i*(sizeof(num)+1))+2+j, num[j]);
   EEPROM.commit();
   return true;
 };

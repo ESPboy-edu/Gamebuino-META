@@ -19,7 +19,9 @@ public:
 	void begin();
 	void config();
 	int32_t get(uint16_t i);
+	void get(uint16_t i, char* num);
 	bool set(uint16_t i, int32_t num);
+	bool set(uint16_t i, char* num);
 	void del(uint16_t i);
 private:
     uint32_t numOfBlocks;

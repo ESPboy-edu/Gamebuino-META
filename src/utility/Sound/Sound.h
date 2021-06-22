@@ -37,6 +37,7 @@ class Sound {
 public:
 	void begin();
 	int8_t play();
+	void play(char *);
 
 	void tone(uint32_t frequency, int32_t duration = 0);
 	void playOK();
@@ -50,7 +51,7 @@ public:
 	void mute();
 	void unmute();
 	bool isMute();	
-	void stop();
+	void stop(uint8_t&);
 	
 	void setVolume(uint8_t volume);
 	uint8_t getVolume();

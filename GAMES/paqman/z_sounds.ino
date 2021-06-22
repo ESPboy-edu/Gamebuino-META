@@ -1,4 +1,4 @@
-
+/*
 const Gamebuino_Meta::Sound_FX eat_dot1[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,150,-6,-44,53,4},
 };
@@ -18,6 +18,4 @@ const Gamebuino_Meta::Sound_FX eat_ghost[] = {
 const Gamebuino_Meta::Sound_FX dead[] = {
   {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,192,-1,49,22,21},
 };
-  
-
-
+ */

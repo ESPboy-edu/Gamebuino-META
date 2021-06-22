@@ -1,5 +1,5 @@
 #include "soundAssets.h"
-
+/*
 const Gamebuino_Meta::Sound_FX jump_fx[] =
 {
     {Gamebuino_Meta::Sound_FX_Wave::NOISE,1,0,12,65,112,2},
@@ -115,3 +115,4 @@ const Gamebuino_Meta::Sound_FX door_fx[] =
     {Gamebuino_Meta::Sound_FX_Wave::SQUARE,1,40,-1,0,159,4},
     {Gamebuino_Meta::Sound_FX_Wave::SQUARE,0,40,-1,0,134,27},
 };
+*/

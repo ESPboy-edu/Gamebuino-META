@@ -167,7 +167,7 @@ void drawfruit() {
       //fruit eaten
       fruitvisible=0;
       score=score+100*gamelevel;
-      gb.sound.fx(eat_bigdot); 
+      //gb.sound.fx(eat_bigdot); 
       gb.sound.tone(70,70);
     }         
   }
@@ -234,7 +234,7 @@ void paqmanfulltile() {
         gb.sound.tone(70,70);
       } else {
         gb.sound.tone(120,70);
-        gb.sound.fx(eat_dot2);
+        //gb.sound.fx(eat_dot2);
       }
       leveldots[checkbyte]=leveldots[checkbyte]-(1 << checkbit);
       if ((paqmanx==1 or paqmanx==26) and (paqmany==4 or paqmany==24)) {
@@ -244,7 +244,7 @@ void paqmanfulltile() {
         gb.sound.tone(200,50);
         delay(50);
         gb.sound.tone(300,50);
-        gb.sound.fx(eat_bigdot);
+        //gb.sound.fx(eat_bigdot);
         score=score+50;
         powerpilltimer=180-gamelevel*15;
         ghostscore=200;
@@ -398,7 +398,7 @@ void checkghostcollission() {
         score=score+ghostscore;
         ghostscore=ghostscore*2;
         ghoststatus[i]=1;
-         gb.sound.fx(eat_ghost);
+         //gb.sound.fx(eat_ghost);
          gb.sound.tone(100,50);
          delay(50);
          gb.sound.tone(400,50);

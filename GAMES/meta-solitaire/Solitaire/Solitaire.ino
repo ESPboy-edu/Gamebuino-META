@@ -165,13 +165,13 @@ void iconAnimation() {
   three.x = 23;
   three.y = 1;
   
-  img.startRecording("ICONGEN.GMV");
+  //img.startRecording("ICONGEN.GMV");
 
   for (int i = 0; i < 30; i++) {
     img.drawImage(0, -30, backgroundImage);
   }
 
-  img.stopRecording(true);
+  //img.stopRecording(true);
 }
 
 void titleScreenAnimation() {

@@ -2,7 +2,7 @@
 #define GLITCH_SOUND_ASSETS_H_
 #pragma once
 #include <Gamebuino-Meta.h>
-
+/*
 extern const Gamebuino_Meta::Sound_FX jump_fx[];
 
 extern const Gamebuino_Meta::Sound_FX climb_fx[];
@@ -26,4 +26,5 @@ extern const Gamebuino_Meta::Sound_FX lose_fx[];
 extern const Gamebuino_Meta::Sound_FX win_fx[];
 
 extern const Gamebuino_Meta::Sound_FX door_fx[];
+*/
 #endif

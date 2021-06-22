@@ -31,6 +31,8 @@ bool muted = false;
 
 int8_t Sound::play() { return(true); }
 
+void Sound::play(char *) {}
+
 void Sound::fx() {}
 
 void Sound::update() {}
@@ -39,7 +41,7 @@ void Sound::tone(uint32_t frequency, int32_t duration) {
     ::tone (SOUNDPIN, frequency, duration);
 }
 
-void Sound::stop() {
+void Sound::stop(uint8_t&) {
     ::noTone(SOUNDPIN);
 }
 

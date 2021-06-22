@@ -7,7 +7,7 @@ const uint16_t highscore_sound[] PROGMEM = {
 void initHighscore(){
   for(byte thisScore = 0; thisScore < NUM_HIGHSCORE; thisScore++){
     highscore[thisScore] = gb.save.get(2*thisScore);
-    gb.save.get(2*thisScore + 1, name[thisScore], NAMELENGTH+1);
+    gb.save.get(2*thisScore + 1, name[thisScore]/*, NAMELENGTH+1*/);
   }
 }
 
@@ -127,4 +127,3 @@ boolean drawNewHighscore(unsigned int newscore){
     }
   }
 }
-
