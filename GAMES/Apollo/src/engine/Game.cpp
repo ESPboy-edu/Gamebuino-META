@@ -17,6 +17,7 @@
 #include "../data/assets.h"
 #include "../data/config.h"
 
+
 void Game::begin() {
 
     _highscore = gb.save.get(HIGHSCORE_SAVING_BLOCK);
@@ -223,8 +224,8 @@ void Game::_spot() {
 
     uint8_t range = ar << 3;
 
-    uint8_t x_min = max(0, ax - range);
-    uint8_t x_max = min(ax + range, SCREEN_WIDTH);
+    uint8_t x_min = max_(0, ax - range);
+    uint8_t x_max = min_(ax + range, SCREEN_WIDTH);
     uint8_t x_spot;
     int16_t my;
     uint16_t d2, d2_min = 0xffff;

@@ -51,7 +51,7 @@ void Apollo::refuel() {
 
 void Apollo::power(float_t p) {
 
-    float_t f = min(_fuel, p * APOLLO_FUEL_DECAY);
+    float_t f = min_(_fuel, p * APOLLO_FUEL_DECAY);
 
     _fuel -= f;
     p      = f / APOLLO_FUEL_DECAY;
@@ -69,7 +69,7 @@ void Apollo::rotate(int8_t a) {
     } else {
 
         int8_t  s = a < 0 ? -1 : 1;
-        uint8_t f = min(_fuel, abs(a));
+        uint8_t f = min_(_fuel, abs(a));
 
         _fuel -= f;
         _vrot = PI*s*f/180.f;

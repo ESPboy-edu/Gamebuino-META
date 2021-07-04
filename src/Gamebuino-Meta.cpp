@@ -56,7 +56,7 @@ void Gamebuino::begin() {
 
   for(uint8_t i=0; i<200; i++) {dac.setVoltage(i*10, false); delay(10);}
   dac.setVoltage(4095, true);
-  /*
+/*  
   //Check OTA2
   if (getKeys()&PAD_ACT || getKeys()&PAD_ESC) { 
     display.delFrameHandler(); 
@@ -64,7 +64,7 @@ void Gamebuino::begin() {
     OTA2obj = new ESPboyOTA2(terminalGUIobj);
     OTA2obj -> checkOTA();
   }
-  */
+*/  
   myLED.setRGB(5,0,0); delay(200);
   myLED.setRGB(0,5,0); delay(200);
   myLED.setRGB(0,0,5); delay(200);
