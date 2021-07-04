@@ -46,6 +46,9 @@ public:
 	uint32_t getBufferSizeWithFrames();
 };
 
+
+
+
 #define DEFAULT_FRAME_LOOP 1
 
 class Image : public Graphics {
@@ -55,6 +58,7 @@ public:
 	Image();
 	~Image();
 	Image(const Image&);
+	void delFrameHandler();
 
 	// ram constructors
 	Image(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl = DEFAULT_FRAME_LOOP);

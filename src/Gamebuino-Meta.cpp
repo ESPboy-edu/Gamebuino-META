@@ -27,37 +27,48 @@ namespace Gamebuino_Meta {
 Gamebuino* gbptr = nullptr;
 
 Gamebuino::Gamebuino(){
-  dac.begin(MCP4725address);
-  dac.setVoltage(0, false);
-
-  mcp.begin(MCP23017address);
-  mcp.pinMode(CSTFTPIN, OUTPUT);
-  mcp.digitalWrite(CSTFTPIN, LOW);
-  myLED.begin(&mcp);
-  timePerFrame = 40; //25 FPS
-  frameEndFlag = true;
-  buttons.begin(&mcp);
-  tft.init();
-  tft.setRotation(Rotation::left);	
-  gbptr = this;
 };
 
 
 
 void Gamebuino::begin() {
-  WiFi.mode(WIFI_OFF); 
-  Serial.begin(115200);
+   WiFi.mode(WIFI_OFF); 
+   //Serial.begin(115200);
+   
+  gbptr = this;
+  timePerFrame = 40; //25 FPS
+  frameEndFlag = true;
+   
+  tft.init();
+  tft.setRotation(Rotation::left);	
+  mcp.begin(MCP23017address);
+  mcp.pinMode(CSTFTPIN, OUTPUT);
+  mcp.digitalWrite(CSTFTPIN, LOW);
+  
+  dac.begin(MCP4725address);
+  dac.setVoltage(0, false);
+  myLED.begin(&mcp);
+  buttons.begin(&mcp);
+   
   myLED.setRGB(0,0,0);
-  drawXBitmap(tft, 30,24, g_espboy, 68, 64);
+  tft.fillScreen(TFT_BLACK);
+  tft.drawXBitmap(30,24, g_espboy, 68, 64, TFT_YELLOW);
+
   for(uint8_t i=0; i<200; i++) {dac.setVoltage(i*10, false); delay(10);}
   dac.setVoltage(4095, true);
-  
+  /*
+  //Check OTA2
+  if (getKeys()&PAD_ACT || getKeys()&PAD_ESC) { 
+    display.delFrameHandler(); 
+    terminalGUIobj = new ESPboyTerminalGUI(&tft._tft, &mcp);
+    OTA2obj = new ESPboyOTA2(terminalGUIobj);
+    OTA2obj -> checkOTA();
+  }
+  */
   myLED.setRGB(5,0,0); delay(200);
   myLED.setRGB(0,5,0); delay(200);
   myLED.setRGB(0,0,5); delay(200);
   myLED.setRGB(0,0,0);
-  
-  save.begin();
   
   display.fill(Color::black);
   display.fontSize = SYSTEM_DEFAULT_FONT_SIZE;
@@ -65,11 +76,14 @@ void Gamebuino::begin() {
   updateDisplay();
   
   startScreen();
-  sound.begin();	
-  pickRandomSeed();
+  sound.begin();
+  save.begin();	
   display.clear();
-	
-  inited = true;
+}
+
+
+void Gamebuino::getDefaultName(char* string){
+   strcpy(string, "name");
 }
 
 
@@ -83,18 +97,6 @@ uint16_t Gamebuino::createColor(uint8_t r, uint8_t g, uint8_t b) {
     return (r | g | b);
 }
 
-
-void Gamebuino::drawXBitmap(Graphics& g, int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h){
-  int32_t i, j, byteWidth = (w + 7) / 8;
-  g.setColor(YELLOW);
-  for (j = 0; j < h; j++) {
-    for (i = 0; i < w; i++ ) {
-      if (pgm_read_byte(bitmap + j * byteWidth + i / 8) & (1 << (i & 7))) {
-        g.drawPixel(x + i, y + j);
-      }
-    }
-  }
-}
 
 
 void Gamebuino::drawLogo(Graphics& g, int8_t x, int8_t y, uint8_t scale) {
@@ -174,6 +176,8 @@ void Gamebuino::setScreenRotation(Rotation r) {
 Rotation Gamebuino::getScreenRotation() {
 	return tft.getRotation();
 }
+
+uint8_t Gamebuino::getKeys() { return (~mcp.readGPIOAB() & 255); }
 
 
 } // namespace Gamebuino_Meta

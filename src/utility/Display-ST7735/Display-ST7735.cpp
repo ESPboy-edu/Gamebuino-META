@@ -150,4 +150,27 @@ Rotation Display_ST7735::getRotation() {
 	return (Rotation)_tft.getRotation();
 }
 
+
+void Display_ST7735::fillScreen(uint32_t color){
+  _tft.fillScreen(color);
+}
+
+void Display_ST7735::drawRect(int32_t x, int32_t y, int32_t w, int32_t h, uint32_t color){
+  _tft.drawRect(x, y, w, h, color);
+}
+
+void Display_ST7735::setTextColor(uint16_t color){
+  _tft.setTextColor(color);
+}
+
+void Display_ST7735::drawString(const char *string, int32_t x, int32_t y){
+  _tft.drawString(string, x, y);
+
+}
+
+void Display_ST7735::drawXBitmap(int16_t x, int16_t y, const uint8_t *bitmap, int16_t w, int16_t h, uint16_t fgcolor){
+  _tft.drawXBitmap(x, y, bitmap, w, h, fgcolor);
+}
+
+
 } // namespace Gamebuino_Meta

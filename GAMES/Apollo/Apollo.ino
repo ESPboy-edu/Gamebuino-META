@@ -12,17 +12,18 @@
  * -------------------------------------------------------------------------
  */
 
+
 #include <Gamebuino-Meta.h>
 #include "src/engine/Game.h"
 
 Game game;
 
-void setup() {
 
-    gb.begin();
-    game.begin();
-    
+void setup() {
+  gb.begin();    
+  game.begin();  
 }
+
 
 void loop() {
 

@@ -49,13 +49,16 @@
 #define abs(x) ((x)>0?(x):-(x))
 #endif
 
-#ifndef max
-#define max(a,b) ((a)>(b)?(a):(b))
+#ifdef max
+#undef max
 #endif
 
-#ifndef min
-#define min(x,y) ((x)<(y)?(x):(y))
+#ifdef min
+#undef min
 #endif
+
+#define max(a,b) ((a)>(b)?(a):(b))
+#define min(x,y) ((x)<(y)?(x):(y))
 
 #define SETTING_VOLUME 0
 #define SETTING_VOLUME_MUTE 1

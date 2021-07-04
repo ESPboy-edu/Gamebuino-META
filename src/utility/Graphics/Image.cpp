@@ -133,6 +133,8 @@ Image::Image(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl) : Graphics(w, 
 	freshStart();
 	init(w, h, frames, fl);
 }
+
+
 void Image::init(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl) {
 	init(w, h, ColorMode::rgb565, frames, fl);
 }
@@ -141,6 +143,8 @@ Image::Image(uint16_t w, uint16_t h, ColorMode col, uint16_t frames, uint8_t fl)
 	freshStart();
 	init(w, h, col, frames, fl);
 }
+
+
 void Image::init(uint16_t w, uint16_t h, ColorMode col, uint16_t _frames, uint8_t fl) {
 	if (isObjectCopy) {
 		return;
@@ -264,6 +268,12 @@ Image::~Image() {
 	//}
 	delete frame_handler;
 }
+
+
+void Image::delFrameHandler(){
+  delete frame_handler;
+}
+
 
 void Image::drawFastHLine(int16_t x, int16_t y, int16_t w) {
 	// Don't draw if we are outside the screen

@@ -4,7 +4,7 @@
 ///////////////
 
 #ifndef SAVEBLOCK_NUM
-#define SAVEBLOCK_NUM 256
+#define SAVEBLOCK_NUM 128
 #endif
 
 
