@@ -119,10 +119,9 @@ enum class Rotation : uint8_t {
 
 class Display_ST7735 : public Graphics {
 public:
-    TFT_eSPI _tft = TFT_eSPI(); 
-	using Graphics::drawImage;
-	Display_ST7735(int8_t CS, int8_t RS);
-
+    Display_ST7735();
+    TFT_eSPI _tft; 
+    
 	void init();
 	void setAddrWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 	void pushColor(uint16_t c);

@@ -141,7 +141,7 @@ void Image::init(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl) {
 
 Image::Image(uint16_t w, uint16_t h, ColorMode col, uint16_t frames, uint8_t fl) : Graphics(w, h) {
 	freshStart();
-	init(w, h, col, frames, fl);
+	init(w, h, col, 1, 1);
 }
 
 
@@ -271,6 +271,7 @@ Image::~Image() {
 
 
 void Image::delFrameHandler(){
+  gb_free(_buffer);
   delete frame_handler;
 }
 

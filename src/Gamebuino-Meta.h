@@ -18,7 +18,7 @@ Authors:
 //#define DISPLAY_MODE DISPLAY_MODE_RGB565
 //#define DISPLAY_MODE DISPLAY_MODE_INDEX
 //#define DISPLAY_MODE DISPLAY_MODE_INDEX_HALFRES
-#define DISPLAY_MODE DISPLAY_MODE_INDEX_128x128
+//#define DISPLAY_MODE DISPLAY_MODE_INDEX_128x128
 #endif
 
 #ifndef DISPLAY_MODE
@@ -46,8 +46,8 @@ Authors:
 #include <Adafruit_MCP4725.h>
 #include <ESP8266WiFi.h> 
 
-//#include "utility/ESPboyOTA2.h"
-//#include "utility/ESPboyTerminalGUI.h"
+//#include "utility/ESPboyLib/ESPboyOTA2.h"
+//#include "utility/ESPboyLib/ESPboyTerminalGUI.h"
 
 
 namespace Gamebuino_Meta {
@@ -71,20 +71,20 @@ namespace Gamebuino_Meta {
 
 class Gamebuino {
 public:
-    Display_ST7735 tft = Display_ST7735(-1, 16);
+	Display_ST7735 tft;
+    Image display = DISPLAY_CONSTRUCTOR;
+    Gui gui;
     Adafruit_MCP23017 mcp;
     Adafruit_MCP4725 dac;
-    //ESPboyTerminalGUI *terminalGUIobj = NULL;
-    //ESPboyOTA2 *OTA2obj = NULL;
     ESPboyLED myLED;
+    Lights lights = Lights(&myLED);
 	Buttons buttons;
 	Sound sound;
-	Lights lights = Lights(&myLED);
 	Save save;
 	Language language;
-	Gui gui;
 	Collide collide;
-	Image display = DISPLAY_CONSTRUCTOR;
+	//ESPboyTerminalGUI *terminalGUIobj = NULL;
+    //ESPboyOTA2 *OTA2obj = NULL;
     
     Gamebuino();
     

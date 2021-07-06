@@ -34,7 +34,7 @@ inline uint16_t swapcolor(uint16_t x) {
 // Constructor when using hardware SPI.	Faster, but must use SPI pins
 // specific to each board type (e.g. 11,13 for Uno, 51,52 for Mega, etc.)
 // Display_ST7735::Display_ST7735(int8_t cs, int8_t rs)  : Graphics(ST7735_TFTHEIGHT_18, ST7735_TFTWIDTH) {
-Display_ST7735::Display_ST7735(int8_t cs, int8_t rs)  : Graphics(128, 128) {
+Display_ST7735::Display_ST7735()  : Graphics(128, 128) {
 }
 
 

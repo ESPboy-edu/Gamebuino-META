@@ -27,6 +27,14 @@ namespace Gamebuino_Meta {
 Gamebuino* gbptr = nullptr;
 
 Gamebuino::Gamebuino(){
+  
+  timePerFrame = 40; //25 FPS
+  frameEndFlag = true;
+   
+  tft.init();
+  tft.setRotation(Rotation::left);	
+
+  gbptr = this;
 };
 
 
@@ -34,28 +42,23 @@ Gamebuino::Gamebuino(){
 void Gamebuino::begin() {
    WiFi.mode(WIFI_OFF); 
    //Serial.begin(115200);
-   
-  gbptr = this;
-  timePerFrame = 40; //25 FPS
-  frameEndFlag = true;
-   
-  tft.init();
-  tft.setRotation(Rotation::left);	
+    
   mcp.begin(MCP23017address);
   mcp.pinMode(CSTFTPIN, OUTPUT);
   mcp.digitalWrite(CSTFTPIN, LOW);
+  myLED.begin(&mcp);
+  buttons.begin(&mcp);
+  myLED.setRGB(0,0,0);
   
   dac.begin(MCP4725address);
   dac.setVoltage(0, false);
-  myLED.begin(&mcp);
-  buttons.begin(&mcp);
-   
-  myLED.setRGB(0,0,0);
+
   tft.fillScreen(TFT_BLACK);
   tft.drawXBitmap(30,24, g_espboy, 68, 64, TFT_YELLOW);
 
   for(uint8_t i=0; i<200; i++) {dac.setVoltage(i*10, false); delay(10);}
   dac.setVoltage(4095, true);
+
 /*  
   //Check OTA2
   if (getKeys()&PAD_ACT || getKeys()&PAD_ESC) { 
@@ -64,7 +67,7 @@ void Gamebuino::begin() {
     OTA2obj = new ESPboyOTA2(terminalGUIobj);
     OTA2obj -> checkOTA();
   }
-*/  
+  */
   myLED.setRGB(5,0,0); delay(200);
   myLED.setRGB(0,5,0); delay(200);
   myLED.setRGB(0,0,5); delay(200);

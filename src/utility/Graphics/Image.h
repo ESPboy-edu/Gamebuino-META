@@ -49,22 +49,23 @@ public:
 
 
 
-#define DEFAULT_FRAME_LOOP 1
-
 class Image : public Graphics {
 public:
 	using Graphics::drawImage;
 	using Graphics::drawBitmap;
 	Image();
 	~Image();
-	Image(const Image&);
+	
 	void delFrameHandler();
+	
+	Image(const Image&);
 
 	// ram constructors
-	Image(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl = DEFAULT_FRAME_LOOP);
-	void init(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl = DEFAULT_FRAME_LOOP);
-	Image(uint16_t w, uint16_t h, ColorMode col = ColorMode::rgb565, uint16_t frames = 1, uint8_t fl = DEFAULT_FRAME_LOOP);
-	void init(uint16_t w, uint16_t h, ColorMode col = ColorMode::rgb565, uint16_t frames = 1, uint8_t fl = DEFAULT_FRAME_LOOP);
+	Image(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl = 1);
+	void init(uint16_t w, uint16_t h, uint16_t frames, uint8_t fl = 1);
+	
+	Image(uint16_t w, uint16_t h, ColorMode col = ColorMode::rgb565, uint16_t frames = 1, uint8_t fl = 1);
+	void init(uint16_t w, uint16_t h, ColorMode col = ColorMode::rgb565, uint16_t frames = 1, uint8_t fl = 1);
 
 
 	// flash constructors
@@ -75,7 +76,7 @@ public:
 	Image(const uint8_t* buffer);
 	void init(const uint8_t* buffer);
 
-	void drawFastHLine(int16_t x, int16_t y, int16_t w) override __attribute__((optimize("-O3")));
+	void drawFastHLine(int16_t x, int16_t y, int16_t w);
 	
 	void nextFrame();
 	void setFrame(uint16_t frame);
@@ -109,6 +110,7 @@ public:
 	uint16_t frames;
 	uint16_t frame = 0;
 	Frame_Handler* frame_handler;
+	
 	uint8_t frame_looping;
 	union {
 		struct {
