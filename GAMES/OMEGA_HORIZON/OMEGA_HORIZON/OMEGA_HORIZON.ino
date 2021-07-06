@@ -1860,7 +1860,10 @@ Rect getEntityRect(byte i){
   }else if(entities[i].Type==26){//karame energy blast
       return {.x=entities[i].point.x+1, .y=entities[i].point.y+1, 6, 6};
   }
+return {0,0,0,0};
 }
+
+
 bool everyXFrames(uint8_t frames)
 {
   return frameCount % frames == 0;
@@ -2287,6 +2290,7 @@ int8_t getTile(uint8_t TempX, uint8_t TempY, uint8_t map_id){
        return (pgm_read_byte(&MapData[mapDataStart+TempY*(pgm_read_byte(&MapData[mapDataStart+0])/4)+TempX/4+6]) & 0b11);
      }
   //}
+  return 0;
 }
 
 int8_t TileCollision(Rect rect, int8_t RX, int8_t RY, int8_t map_id){

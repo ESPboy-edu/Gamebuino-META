@@ -10,13 +10,12 @@ Authors:
 #define _GAMEBUINO_META_SAVE_H_
 
 #include "../../config/config.h"
-#include <EEPROM_Rotate.h>
+#include <ESP_EEPROM.h>
 
 namespace Gamebuino_Meta {
 
 class Save {
 public:
-    EEPROM_Rotate *EEPROMr;
 	void begin();
 	void config();
 	int32_t get(uint16_t i);
